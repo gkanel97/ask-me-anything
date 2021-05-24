@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5000,
+  "username": "q2d",
+  "password": "alskdjfhg",
+  "database": "appDB",
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "synchronize": true
+}
