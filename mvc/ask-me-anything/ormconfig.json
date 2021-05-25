@@ -1,7 +1,7 @@
 {
   "type": "postgres",
   "host": "localhost",
-  "port": 5000,
+  "port": 5432,
   "username": "q2d",
   "password": "alskdjfhg",
   "database": "appDB",
