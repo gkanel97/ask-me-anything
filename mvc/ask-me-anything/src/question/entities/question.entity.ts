@@ -1,6 +1,6 @@
 import {
   Entity, Column, PrimaryGeneratedColumn, CreateDateColumn,
-  OneToMany, ManyToOne, ManyToMany, JoinColumn,
+  OneToMany, ManyToOne, ManyToMany, JoinColumn, JoinTable, UpdateDateColumn
 } from "typeorm";
 
 import { User } from '../../user/entities/user.entity';
@@ -19,7 +19,10 @@ export class Question {
   questionText: string;
 
   @CreateDateColumn()
-  questionDate: Date;
+  creationDate: Date;
+
+  @UpdateDateColumn()
+  updateDate: Date;
 
   @ManyToOne(() => User, user => user.id, { onDelete: "CASCADE" })
   @JoinColumn({ name: 'userID' })
@@ -29,6 +32,6 @@ export class Question {
   answers: Answer[];
 
   @ManyToMany(() => Keyword, keyword => keyword.id)
-  @JoinColumn({ name: 'keywordID'})
+  @JoinTable()
   keywords: Keyword[];
 }

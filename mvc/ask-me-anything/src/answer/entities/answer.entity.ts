@@ -15,7 +15,10 @@ export class Answer {
   answerText: string;
 
   @CreateDateColumn()
-  answerDate: string;
+  createDate: Date;
+
+  @UpdateDateColumn()
+  updateDate: Date;
 
   @ManyToOne(() => Question, question => question.id, { onDelete: "CASCADE" })
   @JoinColumn({ name: 'questionID' })

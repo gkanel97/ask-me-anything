@@ -13,6 +13,5 @@ export class Keyword {
   keywordText: string;
 
   @ManyToMany(() => Question, question => question.id)
-  @JoinColumn({ name: 'questionID' })
   questions: Question[];
 }
