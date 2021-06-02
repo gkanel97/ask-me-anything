@@ -1,15 +1,12 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn
+  Entity, PrimaryColumn, ManyToMany
 } from "typeorm";
 
 import { Question } from '../../question/entities/question.entity';
 
 @Entity()
 export class Keyword {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   keywordText: string;
 
   @ManyToMany(() => Question, question => question.id)

@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { Keyword } from './entities/keyword.entity';
 import { CreateKeywordDto } from './dto/create-keyword.dto';
 import { UpdateKeywordDto } from './dto/update-keyword.dto';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class KeywordService {
-  create(createKeywordDto: CreateKeywordDto) {
-    return 'This action adds a new keyword';
+  constructor(@InjectEntityManager() private manager: EntityManager) {}
+
+  async create(createKeywordDto: CreateKeywordDto): Promise<Keyword> {
+    const keyword = await this.manager.create(Keyword, createKeywordDto);
+    return this.manager.save(keyword);
   }
 
-  findAll() {
-    return `This action returns all keyword`;
+  async findAll(): Promise<Keyword[]> {
+    return this.manager.find(Keyword);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} keyword`;
-  }
-
-  update(id: number, updateKeywordDto: UpdateKeywordDto) {
-    return `This action updates a #${id} keyword`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} keyword`;
-  }
+  // async findOne(id: number): Promise<Keyword> {
+  //   return this.manager.findOne(Keyword, id)
+  // }
+  //
+  // async update(id: number, updateKeywordDto: UpdateKeywordDto): Promise<Keyword> {
+  //   return `This action updates a #${id} keyword`;
+  // }
+  //
+  // async remove(id: number): Promise<void> {
+  //   return `This action removes a #${id} keyword`;
+  // }
 }

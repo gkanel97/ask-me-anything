@@ -17,18 +17,18 @@ export class KeywordController {
     return this.keywordService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.keywordService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateKeywordDto: UpdateKeywordDto) {
-    return this.keywordService.update(+id, updateKeywordDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.keywordService.remove(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.keywordService.findOne(+id);
+  // }
+  //
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateKeywordDto: UpdateKeywordDto) {
+  //   return this.keywordService.update(+id, updateKeywordDto);
+  // }
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.keywordService.remove(+id);
+  // }
 }

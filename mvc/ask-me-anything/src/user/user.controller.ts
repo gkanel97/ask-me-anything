@@ -31,4 +31,24 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @Post('signup')
+  async signup(@Body() createUserDto: CreateUserDto) {
+
+  }
+
+  @Post('signin')
+  async signin() {
+
+  }
+
+  @Post('refresh')
+  async refreshToken() {
+
+  }
+
+  @Post('signout')
+  async signout() {
+
+  }
 }

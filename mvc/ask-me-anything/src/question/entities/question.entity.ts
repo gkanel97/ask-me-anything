@@ -31,7 +31,7 @@ export class Question {
   @OneToMany(() => Answer, answer => answer.id)
   answers: Answer[];
 
-  @ManyToMany(() => Keyword, keyword => keyword.id)
+  @ManyToMany(() => Keyword, keyword => keyword.keywordText)
   @JoinTable()
   keywords: Keyword[];
 }
