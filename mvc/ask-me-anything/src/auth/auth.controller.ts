@@ -11,14 +11,13 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Request() req) {
-    return this.authService.generateToken(req.user);
+    return this.authService.generateInitialTokens(req.user);
   }
-
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)
-  async refreshToken(@Body('refresh_token') token) {
-    return this.authService.refreshToken(token);
+  async refreshToken(@Request() req,  @Body('refresh_token') token: string) {
+    return this.authService.refreshAccessToken(req.user, token);
   }
 
   @Post('logout')

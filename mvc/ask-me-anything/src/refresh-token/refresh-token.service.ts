@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRefreshTokenDto } from './dto/create-refresh-token.dto';
 import { UpdateRefreshTokenDto } from './dto/update-refresh-token.dto';
+import { InjectEntityManager } from "@nestjs/typeorm";
+import { RefreshToken } from "./entities/refresh-token.entity";
 
 @Injectable()
 export class RefreshTokenService {
-  create(createRefreshTokenDto: CreateRefreshTokenDto) {
-    return 'This action adds a new refreshToken';
-  }
+  constructor(@InjectEntityManager() private manager) {}
 
-  findAll() {
-    return `This action returns all refreshToken`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} refreshToken`;
-  }
-
-  update(id: number, updateRefreshTokenDto: UpdateRefreshTokenDto) {
-    return `This action updates a #${id} refreshToken`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} refreshToken`;
+  async createTokenForUUID(uuid: number): Promise<RefreshToken> {
+    const token = 'THIS_IS_A_REFRESH_TOKEN';
+    const refTokenEntity = await this.manager.create(RefreshToken, {userID: uuid, token: token});
+    return this.manager.save(refTokenEntity);
   }
 }

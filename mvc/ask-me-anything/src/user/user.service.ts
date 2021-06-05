@@ -27,8 +27,8 @@ export class UserService {
   }
 
 
-  async findByUUID(uuid: string): Promise<any> {
-
+  async findByUUID(uuid: number): Promise<any> {
+    return this.manager.findOne(User, {id: uuid}, {relations: ['tokens']});
   }
 
   async updateName(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
