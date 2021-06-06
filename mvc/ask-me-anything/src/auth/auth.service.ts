@@ -6,6 +6,7 @@ import { CreateUserDto } from "../user/dto/create-user.dto";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { RefreshTokenService } from "../refresh-token/refresh-token.service";
 import { RefreshToken } from "../refresh-token/entities/refresh-token.entity";
+import { jwtConstants } from "./constants";
 
 @Injectable()
 export class AuthService {
@@ -27,12 +28,11 @@ export class AuthService {
   }
 
   async generateInitialTokens(userId: number) {
-    const payload = {uuid: userId};
-    const refreshTokenEntity = await this.refTokenService.createTokenForUUID(userId);
+    const payload = { uuid: userId };
 
     return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: refreshTokenEntity.token
+      access_token: this.jwtService.sign(payload, { secret:jwtConstants.access_secret, expiresIn: '5m' }),
+      refresh_token: this.jwtService.sign(payload, { secret:jwtConstants.refresh_secret, expiresIn: '30m' })
     };
   }
 

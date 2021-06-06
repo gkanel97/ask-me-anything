@@ -1,3 +1,4 @@
 export const jwtConstants = {
-  secret: 'THIS_IS_A_SECRET'
+  access_secret: 'MY_SECRET_COMBINATION',
+  refresh_secret: 'KALOMIRA_DESERVED_TO_WIN'
 }
