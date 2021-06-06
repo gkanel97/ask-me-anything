@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRefreshTokenDto } from './dto/create-refresh-token.dto';
-import { UpdateRefreshTokenDto } from './dto/update-refresh-token.dto';
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { RefreshToken } from "./entities/refresh-token.entity";
 
@@ -8,9 +6,21 @@ import { RefreshToken } from "./entities/refresh-token.entity";
 export class RefreshTokenService {
   constructor(@InjectEntityManager() private manager) {}
 
-  async createTokenForUUID(uuid: number): Promise<RefreshToken> {
-    const token = 'THIS_IS_A_REFRESH_TOKEN';
-    const refTokenEntity = await this.manager.create(RefreshToken, {userID: uuid, token: token});
+  async saveToken({ uuid, identifier }): Promise<RefreshToken> {
+    const refTokenEntity = await this.manager.create(RefreshToken, { token: identifier, user: uuid });
     return this.manager.save(refTokenEntity);
   }
+
+  async verifyUserToken(uuid, token): Promise<RefreshToken> {
+    return this.manager.findOneOrFail(RefreshToken, { token: token, user: uuid });
+  }
+
+  async deleteToken(uuid, token): Promise<void> {
+    return this.manager.delete(RefreshToken, { user: uuid, token: token });
+  }
+
+  async deleteAllTokens(uuid): Promise<void> {
+    return this.manager.delete(RefreshToken, { user: uuid });
+  }
+
 }

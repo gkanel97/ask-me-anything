@@ -1,11 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from "../user/dto/create-user.dto";
-import { InjectEntityManager } from "@nestjs/typeorm";
 import { RefreshTokenService } from "../refresh-token/refresh-token.service";
-import { RefreshToken } from "../refresh-token/entities/refresh-token.entity";
 import { jwtConstants } from "./constants";
 
 @Injectable()
@@ -27,29 +24,38 @@ export class AuthService {
     }
   }
 
-  async generateInitialTokens(userId: number) {
-    const payload = { uuid: userId };
+  async generateInitialTokens(userId: string) {
+    const access_payload = { uuid: userId };
+    const refresh_payload = { uuid: userId, identifier: bcrypt.hashSync(Date.now().toString(), 5).substr(7) };
+
+    await this.refTokenService.saveToken(refresh_payload);
 
     return {
-      access_token: this.jwtService.sign(payload, { secret:jwtConstants.access_secret, expiresIn: '5m' }),
-      refresh_token: this.jwtService.sign(payload, { secret:jwtConstants.refresh_secret, expiresIn: '30m' })
+      access_token: this.jwtService.sign(access_payload, { secret:jwtConstants.access_secret, expiresIn: '5m' }),
+      refresh_token: this.jwtService.sign(refresh_payload, { secret:jwtConstants.refresh_secret, expiresIn: '30m' })
     };
   }
 
-  async refreshAccessToken(userId: number, token: string) {
-    const userEntity = await this.userService.findByUUID(userId);
-    if (userEntity && token in userEntity.tokens) {
-      const payload = {uuid: userId};
+  async refreshAccessToken({ uuid, identifier }) {
+    const check = await this.refTokenService.verifyUserToken(uuid, identifier);
+
+    if(check) {
+      const access_payload = { uuid: uuid };
       return {
-        access_token: this.jwtService.sign(payload)
+        access_token: this.jwtService.sign(access_payload, { secret:jwtConstants.access_secret, expiresIn: '5m' })
       }
     }
     else {
-      return null;
+      throw new UnauthorizedException();
     }
   }
 
-  async cancelToken() {
-
+  async cancelToken({ uuid, identifier }): Promise<void> {
+    return this.refTokenService.deleteToken(uuid, identifier);
   }
+
+  async cancelAllTokens(uuid): Promise<void> {
+    return this.refTokenService.deleteAllTokens(uuid);
+  }
+
 }
