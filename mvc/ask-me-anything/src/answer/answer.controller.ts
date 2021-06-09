@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, HttpCode, UseGuards } from "@nestjs/common";
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
+import { JwtAuthGuard } from "../auth/jwt.guard";
 
 @Controller('answer')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @Post()
-  create(@Body() createAnswerDto: CreateAnswerDto) {
-    return this.answerService.create(createAnswerDto);
+  @Post('create')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  create(@Body() createAnswerDto: CreateAnswerDto, @Request() req) {
+    return this.answerService.create(createAnswerDto, req.user);
   }
 
   @Get()
