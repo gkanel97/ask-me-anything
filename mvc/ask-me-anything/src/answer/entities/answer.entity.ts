@@ -20,11 +20,11 @@ export class Answer {
   @UpdateDateColumn()
   updateDate: Date;
 
-  @ManyToOne(() => Question, question => question.id, { onDelete: "CASCADE" })
+  @ManyToOne(() => Question, question => question.answers, { onDelete: "CASCADE" })
   @JoinColumn({ name: 'questionID' })
   question: Question;
 
-  @ManyToOne(() => User, user => user.id, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, user => user.answers, { onDelete: "CASCADE" })
   @JoinColumn ({ name: 'userID'} )
   user: User;
 }

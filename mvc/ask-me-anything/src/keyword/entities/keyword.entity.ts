@@ -9,6 +9,6 @@ export class Keyword {
   @PrimaryColumn()
   keywordText: string;
 
-  @ManyToMany(() => Question, question => question.id)
+  @ManyToMany(() => Question, question => question.keywords)
   questions: Question[];
 }

@@ -30,9 +30,9 @@ export class User {
   @OneToMany(() => RefreshToken, token => token.user)
   tokens: RefreshToken[];
 
-  @OneToMany(() => Question, question => question.id)
+  @OneToMany(() => Question, question => question.user)
   questions: Question[];
 
-  @OneToMany(() => Answer, answer => answer.id)
+  @OneToMany(() => Answer, answer => answer.user)
   answers: Answer[];
 }

@@ -6,6 +6,7 @@ import {
 import { User } from '../../user/entities/user.entity';
 import { Answer } from '../../answer/entities/answer.entity';
 import { Keyword } from '../../keyword/entities/keyword.entity';
+import { Exclude, Transform } from "class-transformer";
 
 @Entity()
 export class Question {
@@ -24,14 +25,15 @@ export class Question {
   @UpdateDateColumn()
   updateDate: Date;
 
-  @ManyToOne(() => User, user => user.id, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, user => user.questions, { onDelete: "CASCADE" })
   @JoinColumn({ name: 'userID' })
+  @Exclude()
   user: User;
 
-  @OneToMany(() => Answer, answer => answer.id)
+  @OneToMany(() => Answer, answer => answer.question)
   answers: Answer[];
 
-  @ManyToMany(() => Keyword, keyword => keyword.keywordText)
+  @ManyToMany(() => Keyword, keyword => keyword.questions)
   @JoinTable()
   keywords: Keyword[];
 }
