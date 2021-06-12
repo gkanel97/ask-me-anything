@@ -37,8 +37,8 @@ export class AuthService {
     await this.refTokenService.saveToken(refresh_payload);
 
     return {
-      access_token: this.jwtService.sign(access_payload, { secret:jwtConstants.access_secret, expiresIn: '5m' }),
-      refresh_token: this.jwtService.sign(refresh_payload, { secret:jwtConstants.refresh_secret, expiresIn: '30m' })
+      access_token: this.jwtService.sign(access_payload, { secret:jwtConstants.access_secret, expiresIn: '5h' }),
+      refresh_token: this.jwtService.sign(refresh_payload, { secret:jwtConstants.refresh_secret, expiresIn: '30d' })
     };
   }
 
