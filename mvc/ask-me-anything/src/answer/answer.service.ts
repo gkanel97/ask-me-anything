@@ -11,7 +11,6 @@ import { EntityManager } from 'typeorm';
 export class AnswerService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
-
   async create(createAnswerDto: CreateAnswerDto, uuid: number): Promise<Answer> {
 
     return this.manager.transaction(async manager => {
@@ -27,8 +26,9 @@ export class AnswerService {
       if (!user) {
         throw new NotFoundException(`User ${uuid} not found`);
       }
-      createAnswerDto.user = user;
-      const newAnswerEntity = await this.manager.create(Answer, createAnswerDto);
+
+      const newAnswerObject = {user: user, ...createAnswerDto};
+      const newAnswerEntity = await this.manager.create(Answer, newAnswerObject);
       return this.manager.save(newAnswerEntity);
     });
     
