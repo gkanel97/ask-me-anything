@@ -1,6 +1,12 @@
-import { ObjectWithId } from '../../validation';
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateAnswerDto {
+
+  @IsNotEmpty()
+  @IsString()
   answerText: string;
-  question: ObjectWithId;
+
+  @IsNotEmpty()
+  @IsNumber()
+  questionId: number;
 }
