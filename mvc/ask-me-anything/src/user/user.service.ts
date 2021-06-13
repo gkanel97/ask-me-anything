@@ -22,7 +22,8 @@ export class UserService {
         throw new NotAcceptableException("A user with the same username and/or email already exists!");
       }
       let newUserEntity = await this.manager.create(User, createUserDto);
-      newUserEntity.password = await bcrypt.hash(createUserDto.password, 10);
+      // Hashing is performed in the entity by a BeforeInsert trigger
+      // newUserEntity.password = await bcrypt.hash(createUserDto.password, 10);
       return manager.save(newUserEntity);
     });
   }
@@ -50,8 +51,9 @@ export class UserService {
       if (!user) {
         throw new NotFoundException();
       }
-      user.firstName = updateUserDto.firstName;
-      user.lastName = updateUserDto.lastName;
+      // user.firstName = updateUserDto.firstName;
+      // user.lastName = updateUserDto.lastName;
+      manager.merge(User, user, updateUserDto);
       return manager.save(user);
     });
   }
@@ -62,7 +64,9 @@ export class UserService {
       if (!user) {
         throw new NotFoundException();
       }
-      user.password = bcrypt.hash(password, 10);
+      // Hashing is performed in the entity by a BeforeUpdate trigger
+      // user.password = bcrypt.hash(password, 10);
+      user.password = password;
       return manager.save(user);
     });
   }

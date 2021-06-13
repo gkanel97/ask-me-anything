@@ -1,12 +1,14 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, OneToMany, Index
+  Entity, Column, PrimaryGeneratedColumn, OneToMany, Index, BeforeInsert, BeforeUpdate
 } from "typeorm";
 
 import { Answer } from '../../answer/entities/answer.entity';
 import { Question } from '../../question/entities/question.entity';
 import { RefreshToken } from '../../refresh-token/entities/refresh-token.entity';
 
-@Entity()
+import * as bcrypt from 'bcrypt';
+
+@Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -35,4 +37,10 @@ export class User {
 
   @OneToMany(() => Answer, answer => answer.user)
   answers: Answer[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }
