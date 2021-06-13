@@ -5,8 +5,11 @@ import {
 
 import { User } from '../../user/entities/user.entity';
 import { Question } from '../../question/entities/question.entity';
+import { Exclude } from "class-transformer";
+import { ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
 
 @Entity()
+@UseInterceptors(ClassSerializerInterceptor)
 export class Answer {
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,5 +29,6 @@ export class Answer {
 
   @ManyToOne(() => User, user => user.answers, { onDelete: "CASCADE" })
   @JoinColumn ({ name: 'userID'} )
+  @Exclude()
   user: User;
 }
