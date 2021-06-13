@@ -8,7 +8,7 @@ import { Answer } from '../../answer/entities/answer.entity';
 import { Keyword } from '../../keyword/entities/keyword.entity';
 import { Exclude, Transform } from "class-transformer";
 
-@Entity()
+@Entity("questions")
 export class Question {
   @PrimaryGeneratedColumn()
   id: number;

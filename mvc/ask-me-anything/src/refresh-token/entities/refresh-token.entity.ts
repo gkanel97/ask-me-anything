@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn, ManyToOne, JoinColumn, Index } from "typeorm";
 import { User } from '../../user/entities/user.entity';
 
-@Entity()
+@Entity("refresh_tokens")
 export class RefreshToken {
   @PrimaryColumn()
   token: string;

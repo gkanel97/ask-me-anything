@@ -37,7 +37,7 @@ export class KeywordService {
 
   async tagQuestion(questionId: number, keywordText: string) {
     return this.manager.transaction(async innerManager => {
-      const keyword = await innerManager.findOne(Keyword, keywordText, { relations: ["questions"] });
+      const keyword = await innerManager.findOne(Keyword, keywordText);
       if (!keyword) {
         throw new NotFoundException(`Keyword ${keywordText} does not exist`);
       }
@@ -47,12 +47,8 @@ export class KeywordService {
       }
       // keyword.questions.push(question);
       // return innerManager.save(keyword);
-      await this.manager.query("INSERT INTO question_tags (keywordkeywordText, questionId) VALUES ($1, $2)", [keywordText, questionId]);
+      await this.manager.query("INSERT INTO question_tags (keywordText, questionId) VALUES ($1, $2)", [keywordText, questionId]);
     });
-  }
-
-  async getAll() {
-    return this.manager.find(Keyword, { relations: ["questions"] })
   }
 }
 

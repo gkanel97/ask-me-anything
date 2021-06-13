@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   HttpCode,
   UseGuards,
   ParseIntPipe,
@@ -36,10 +34,5 @@ export class KeywordController {
   @UseGuards(JwtAuthGuard)
   tagQuestion(@Body('questionId', ParseIntPipe) questionId: number, @Body('keywordText') keywordText: string) {
     return this.keywordService.tagQuestion(questionId, keywordText);
-  }
-
-  @Get('all')
-  getAll() {
-    return this.keywordService.getAll();
   }
 }
