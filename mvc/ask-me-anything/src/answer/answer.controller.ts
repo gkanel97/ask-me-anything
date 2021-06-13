@@ -7,7 +7,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  ParseIntPipe
+  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor
 } from "@nestjs/common";
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto } from './dto/create-answer.dto';
@@ -15,6 +15,7 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { JwtAuthGuard } from "../auth/jwt.guard";
 
 @Controller('answer')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 

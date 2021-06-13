@@ -22,7 +22,7 @@ export class AnswerService {
         throw new NotFoundException(`User ${uuid} not found`);
       }
 
-      const newAnswerObject = {user: user, ...createAnswerDto};
+      const newAnswerObject = {user: user, question: question, ...createAnswerDto};
       const newAnswerEntity = await innerManager.create(Answer, newAnswerObject);
       return innerManager.save(newAnswerEntity);
     });
@@ -45,14 +45,14 @@ export class AnswerService {
 
  async delete(answerId: number, uuid: string) {
     return this.manager.transaction(async innerManager => {
-      const answer = await  innerManager.findOne(Answer, answerId);
+      const answer = await innerManager.findOne(Answer, answerId, { relations: ["user"] });
       if (!answer) {
         throw new NotFoundException(`Answer ${answerId} was not found`);
       }
       if (answer.user.id !== uuid) {
         throw new ForbiddenException("You cannot delete another user's answer");
       }
-      await innerManager.delete(Answer, answer);
+      await innerManager.delete(Answer, answerId);
     });
  }
 
