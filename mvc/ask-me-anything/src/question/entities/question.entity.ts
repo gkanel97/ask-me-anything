@@ -34,6 +34,6 @@ export class Question {
   answers: Answer[];
 
   @ManyToMany(() => Keyword, keyword => keyword.questions)
-  @JoinTable()
+  // @JoinTable()
   keywords: Keyword[];
 }

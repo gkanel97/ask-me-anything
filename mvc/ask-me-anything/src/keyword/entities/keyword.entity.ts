@@ -1,5 +1,5 @@
 import {
-  Entity, PrimaryColumn, ManyToMany
+  Entity, PrimaryColumn, ManyToMany, JoinTable
 } from "typeorm";
 
 import { Question } from '../../question/entities/question.entity';
@@ -10,5 +10,6 @@ export class Keyword {
   keywordText: string;
 
   @ManyToMany(() => Question, question => question.keywords)
+  @JoinTable({ name: "question_tags" })
   questions: Question[];
 }

@@ -1,33 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  UseGuards,
+  ParseIntPipe,
+  Query
+} from "@nestjs/common";
 import { KeywordService } from './keyword.service';
 import { CreateKeywordDto } from './dto/create-keyword.dto';
+import { JwtAuthGuard } from "../auth/jwt.guard";
 
 @Controller('keyword')
 export class KeywordController {
   constructor(private readonly keywordService: KeywordService) {}
 
-  @Post()
+  @Post('create')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
   create(@Body() createKeywordDto: CreateKeywordDto) {
     return this.keywordService.create(createKeywordDto);
   }
 
-  @Get()
-  findAll() {
-    return this.keywordService.findAll();
+  @Get('search/:n')
+  search(@Param('n', ParseIntPipe) n: number, @Query('text') text: string) {
+    return this.keywordService.search(n, text);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.keywordService.findOne(+id);
-  // }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateKeywordDto: UpdateKeywordDto) {
-  //   return this.keywordService.update(+id, updateKeywordDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.keywordService.remove(+id);
-  // }
+  @Post('tag')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  tagQuestion(@Body('questionId', ParseIntPipe) questionId: number, @Body('keywordText') keywordText: string) {
+    return this.keywordService.tagQuestion(questionId, keywordText);
+  }
+
+  @Get('all')
+  getAll() {
+    return this.keywordService.getAll();
+  }
 }
