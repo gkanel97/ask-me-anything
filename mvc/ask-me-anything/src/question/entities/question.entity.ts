@@ -6,7 +6,8 @@ import {
 import { User } from '../../user/entities/user.entity';
 import { Answer } from '../../answer/entities/answer.entity';
 import { Keyword } from '../../keyword/entities/keyword.entity';
-import { Exclude, Transform } from "class-transformer";
+import { Exclude} from "class-transformer";
+import { Length } from "class-validator";
 
 @Entity("questions")
 export class Question {
@@ -14,9 +15,11 @@ export class Question {
   id: number;
 
   @Column()
+  @Length(5, 100)
   questionTitle: string;
 
   @Column()
+  @Length(1, 5000)
   questionText: string;
 
   @CreateDateColumn()

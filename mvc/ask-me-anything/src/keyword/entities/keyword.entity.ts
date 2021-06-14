@@ -3,10 +3,12 @@ import {
 } from "typeorm";
 
 import { Question } from '../../question/entities/question.entity';
+import { Length } from "class-validator";
 
 @Entity("keywords")
 export class Keyword {
   @PrimaryColumn()
+  @Length(5, 50)
   keywordText: string;
 
   @ManyToMany(() => Question, question => question.keywords)
