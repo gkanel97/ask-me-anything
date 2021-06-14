@@ -39,7 +39,6 @@ export class User {
   answers: Answer[];
 
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }

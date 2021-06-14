@@ -65,8 +65,9 @@ export class UserService {
         throw new NotFoundException();
       }
       // Hashing is performed in the entity by a BeforeUpdate trigger
-      // user.password = bcrypt.hash(password, 10);
-      user.password = password;
+      // BeforeUpdate trigger was removed because we have two separate updating functionalities
+      // One updates just the password and the other updates just the names
+      user.password = bcrypt.hash(password, 10);
       return manager.save(user);
     });
   }
