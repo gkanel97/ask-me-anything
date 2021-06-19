@@ -9,10 +9,11 @@ class Signup extends Component {
             passwordConfirm: '',
             email: '',
             firstName: '',
-            lastName: ''
+            lastName: '',
+            isValidated: false
         }
         this.setInputValue = this.setInputValue.bind(this);
-        this.handleCredentialSubmittion = this.handleCredentialSubmittion.bind(this);
+        this.handleCredentialSubmission = this.handleCredentialSubmission.bind(this);
     }
 
     setInputValue(event) {
@@ -21,8 +22,11 @@ class Signup extends Component {
         });
     }
 
-    handleCredentialSubmittion(e) {
+    handleCredentialSubmission(e) {
         e.preventDefault();
+        this.setState({
+            isValidated: !this.state.isValidated
+        })
         alert(`You submitted username: ${this.state.username} & password: ${this.state.password}`);
     }
 
@@ -34,10 +38,13 @@ class Signup extends Component {
         return (
             <div className="row">
                 <div className="col-md-5 border border-primary border-1 rounded rounded-3">
-                    <form className="p-4">
+                    <form className={`p-4 needs-validation ${this.state.isValidated ? "was-validated" : ""}`} novalidate>
                         <div className="mb-3">
                             <label htmlFor="txtUsername" className="form-label">Username</label>
-                            <input className="form-control" id="txtUsername" name="username" value={this.state.username} onChange={this.setInputValue} />
+                            <input className="form-control" id="txtUsername" name="username" value={this.state.username} onChange={this.setInputValue} required />
+                            <div className="invalid-feedback">
+                                Please choose a username
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="txtEmail" className="form-label">Email address</label>
@@ -46,6 +53,9 @@ class Signup extends Component {
                         <div className="mb-3">
                             <label htmlFor="txtPassword" className="form-label">Password</label>
                             <input type="password" className="form-control" id="txtPassword" name="password" value={this.state.password} onChange={this.setInputValue} />
+                            <div className="invalid-feedback">
+                                Please choose a username
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="txtPasswordConfirm" className="form-label">Confirm Password</label>
@@ -60,7 +70,7 @@ class Signup extends Component {
                             <label htmlFor="txtLastName" className="form-label">Last Name</label>
                             <input className="form-control" id="txtLastName" name="lastName" value={this.state.lastName} onChange={this.setInputValue} />
                         </div>
-                        <button type="submit" className="btn btn-primary" onClick={this.handleCredentialSubmittion}>Create Account</button>
+                        <button type="submit" className="btn btn-primary" onClick={this.handleCredentialSubmission}>Create Account</button>
                     </form>
                 </div>
             </div>

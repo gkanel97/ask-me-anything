@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 class Footer extends Component {
     render() {
         return (
-            <footer className="navbar navbar-expand-xxl fixed-bottom navbar-light bg-light">
+            <footer className="navbar navbar-expand-md fixed-bottom navbar-light bg-light">
                 <div className="container-fluid">
                     <ul className="navbar-nav nav-fill w-100">
                         <li className="nav-item">
