@@ -68,4 +68,12 @@ export class AnswerService {
       relations: ["question"]
     });
  }
+
+  async getAnswersPerDay(n) {
+    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+  }
+
+  async getMyAnswersPerDay(n: number, uuid: string) {
+    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
+  }
 }

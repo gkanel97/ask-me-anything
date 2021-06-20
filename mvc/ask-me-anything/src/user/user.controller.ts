@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  ClassSerializerInterceptor
+  ClassSerializerInterceptor, HttpCode
 } from "@nestjs/common";
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';

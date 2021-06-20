@@ -3,7 +3,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { User } from "../user/entities/user.entity";
 import { InjectEntityManager } from "@nestjs/typeorm";
-import { EntityManager } from "typeorm";
+import { EntityManager, getManager } from "typeorm";
 import { Question } from "./entities/question.entity";
 
 @Injectable()
@@ -71,5 +71,17 @@ export class QuestionService {
     });
   }
 
+  async getQuestionsPerDay(n) {
+    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+    // return this.manager
+    //   .createQueryBuilder()
+    //   .select("DATE(question.updateDate)", "date")
+    //   .addSelect("COUNT(question.id)", "count")
+    //   .from(Question, "question")
+    //   .groupBy("date");
+  }
 
+  async getMyQuestionsPerDay(n: number, uuid: string) {
+    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
+  }
 }

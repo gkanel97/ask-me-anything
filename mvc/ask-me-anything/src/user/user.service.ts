@@ -77,8 +77,4 @@ export class UserService {
       return manager.save(user);
     });
   }
-
-  async remove(uuid: string): Promise<void> {
-
-  }
 }
