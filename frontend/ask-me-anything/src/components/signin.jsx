@@ -24,9 +24,9 @@ class Signin extends Component {
 
     render() { 
         return (
-            <div className="row">
+            <div className="row justify-content-center mt-5">
                 <div className="col-md-5 border border-2 rounded-2">
-                    <form className="p-3">
+                    <form className="p-5">
                         <div className="mb-3">
                             <label htmlFor="txtUsername" className="form-label">Username</label>
                             <input className="form-control" id="txtUsername" name="username" value={this.state.username} onChange={this.setInputValue} />
@@ -35,7 +35,7 @@ class Signin extends Component {
                             <label htmlFor="txtPassword" className="form-label">Password</label>
                             <input type="password" className="form-control" id="txtPassword" name="password" value={this.state.password} onChange={this.setInputValue} />
                         </div>
-                        <button type="submit" className="btn btn-primary" onClick={this.handleCredentialSubmittion}>Login</button>
+                        <button type="submit" className="btn btn-primary mt-2" onClick={this.handleCredentialSubmittion}>Login</button>
                     </form>
                 </div>
             </div>

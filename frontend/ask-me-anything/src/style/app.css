@@ -1,0 +1,14 @@
+.container-main {
+  margin-top: 3rem !important;
+  margin-bottom: 5rem !important;
+}
+
+.home-fancy-button {
+  position: absolute;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  white-space: normal !important;
+  text-align: center !important;
+  margin: 0 !important;
+}

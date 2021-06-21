@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import Home from "./home";
 import About from "./about";
@@ -12,14 +12,19 @@ import MyHome from "./myHome";
 class Content extends Component {
     render() {
         return (
-            <div className="container container-md my-5">
-                <Route path='/' exact component={Home}></Route>
-                <Route path='/about' component={About} ></Route>
-                <Route path='/signin' component={Signin}></Route>
-                <Route path='/signup' component={Signup}></Route>
-                <Route path='/question' component={Question}></Route>
-                <Route path='/answer' component={Answer}></Route>
-                <Route path='/my' component={MyHome}></Route>
+            <div className="container-md my-5">
+                <Switch>
+                    <Route path='/' exact component={Home}></Route>
+                    <Route path='/about' exact component={About} ></Route>
+                    <Route path='/signin' exact component={Signin}></Route>
+                    <Route path='/signup' exact component={Signup}></Route>
+                    <Route path='/question' exact component={Question}></Route>
+                    <Route path='/answer' exact component={Answer}></Route>
+                    <Route path='/my' exact component={MyHome}></Route>
+                    <Route path='*' render={() => {
+                        return <h1>404</h1>
+                    }}></Route>
+                </Switch>
             </div>
         );
     }

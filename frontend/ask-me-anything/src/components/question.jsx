@@ -26,6 +26,7 @@ class Question extends Component {
     render() {
         return (
             <React.Fragment>
+                <h1>{JSON.stringify(this.props.match)}</h1>
                 <h2>Ask a question</h2>
                 <hr/>
                 <form>

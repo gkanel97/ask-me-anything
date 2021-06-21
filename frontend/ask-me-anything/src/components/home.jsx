@@ -5,8 +5,9 @@ class Home extends Component {
     render() {
         return (
             <React.Fragment>
+                <h1>{JSON.stringify(this.props.match)}</h1>
                 <h2>Welcome to AskMeAnything</h2>
-                <div className="row">
+                <div className="row" style={{ minHeight: "50vh" }}>
                     <div className="col-lg-5 my-2">
                         <div className="h-100 p-5 text-white bg-dark rounded-3">
                             <h4>Questions per day chart</h4>
@@ -23,30 +24,23 @@ class Home extends Component {
                         </div>
                     </div>
                     <div className="col-lg-2 my-2 p-0">
-                        <div className="row">
-                            <div className="col-12 my-2">
+                        <div className="row" style={{ height: "100%" }}>
+                            <div className="col-12 mb-2">
                                 <NavLink to='/question' style={{ textDecoration: 'none' }}>
-                                    <div className="h-100 p-5 text-white bg-dark rounded-3">
-                                        <h5 className="m-0 justify-content-center">Create a question</h5>
+                                    <div className="h-100 p-2 text-white bg-dark rounded-3 position-relative">
+                                        <p className="home-fancy-button">Create a question</p>
                                     </div>
                                 </NavLink>
                             </div>
-                            <div className="col-12 my-2">
+                            <div className="col-12 mt-2">
                                 <NavLink to='/answer' style={{ textDecoration: 'none' }}>
-                                    <div className="h-100 p-5 text-white bg-dark rounded-3">
-                                        <h5 className="m-0 justify-content-center">Answer a question</h5>
+                                    <div className="h-100 p-2 text-white bg-dark rounded-3 position-relative">
+                                        <p className="home-fancy-button">Answer a question</p>
                                     </div>
                                 </NavLink>
                             </div>
                         </div>
                     </div>
-                    {/*<div className="col-lg-3 my-2">*/}
-                    {/*    <NavLink to='/about'>*/}
-                    {/*        <div className="h-100 p-5 text-white bg-dark rounded-3">*/}
-                    {/*            <h4>Questions per day</h4>*/}
-                    {/*        </div>*/}
-                    {/*    </NavLink>*/}
-                    {/*</div>*/}
                 </div>
             </React.Fragment>
         );
