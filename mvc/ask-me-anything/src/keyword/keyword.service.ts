@@ -50,5 +50,9 @@ export class KeywordService {
       await this.manager.query("INSERT INTO question_tags (keywordText, questionId) VALUES ($1, $2)", [keywordText, questionId]);
     });
   }
+
+  async getQuestionsPerKeyword() {
+    return this.manager.query("SELECT keywordText, COUNT(questionId) FROM (question_tags) GROUP BY (keywordText);");
+  }
 }
 

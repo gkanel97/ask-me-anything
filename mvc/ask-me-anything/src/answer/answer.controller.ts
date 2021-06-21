@@ -46,4 +46,17 @@ export class AnswerController {
   getMy(@Param('n', ParseIntPipe) n: number, @Request() req) {
     return this.answerService.getMy(n, req.user);
   }
+
+  @Get('getAnswersPerDay/:n')
+  @HttpCode(200)
+  getQuestionsPerDay(@Param('n', ParseIntPipe) n: number) {
+    return this.answerService.getAnswersPerDay(n);
+  }
+
+  @Get('getMyAnswersPerDay/:n')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  getMyQuestionsPerDay(@Param('n', ParseIntPipe) n: number, @Request() req) {
+    return this.answerService.getMyAnswersPerDay(n, req.user);
+  }
 }

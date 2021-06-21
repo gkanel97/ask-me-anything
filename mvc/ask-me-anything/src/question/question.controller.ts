@@ -15,6 +15,7 @@ import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { JwtAuthGuard } from "../auth/jwt.guard";
+import { HttpErrorByCode } from "@nestjs/common/utils/http-error-by-code.util";
 
 @Controller('question')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -59,5 +60,18 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   getMy(@Param('n', ParseIntPipe) n: number, @Request() req) {
     return this.questionService.getMy(n, req.user);
+  }
+
+  @Get('getQuestionsPerDay/:n')
+  @HttpCode(200)
+  getQuestionsPerDay(@Param('n', ParseIntPipe) n: number) {
+    return this.questionService.getQuestionsPerDay(n);
+  }
+
+  @Get('getMyQuestionsPerDay/:n')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  getMyQuestionsPerDay(@Param('n', ParseIntPipe) n: number, @Request() req) {
+    return this.questionService.getMyQuestionsPerDay(n, req.user);
   }
 }
