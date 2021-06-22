@@ -72,13 +72,15 @@ export class QuestionService {
   }
 
   async getQuestionsPerDay(n) {
-    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
-    // return this.manager
-    //   .createQueryBuilder()
-    //   .select("DATE(question.updateDate)", "date")
-    //   .addSelect("COUNT(question.id)", "count")
-    //   .from(Question, "question")
-    //   .groupBy("date");
+    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+    return this.manager
+      .createQueryBuilder(Question, "questions")
+      .select("DATE(updateDate)", "date")
+      .addSelect("COUNT(id)", "count")
+      .groupBy("date")
+      .orderBy("date", "DESC")
+      .limit(n)
+      .getMany();
   }
 
   async getMyQuestionsPerDay(n: number, uuid: string) {
