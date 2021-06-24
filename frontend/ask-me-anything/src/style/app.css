@@ -12,3 +12,12 @@
   text-align: center !important;
   margin: 0 !important;
 }
+
+.list-fancy-text {
+  position: absolute;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  white-space: normal !important;
+  text-align: center !important;
+  margin: 0 !important;
+}
