@@ -3,11 +3,20 @@ import { Redirect } from 'react-router-dom';
 
 class Signout extends Component {
     
-    componentDidMount() {
-        // localStorage.removeItem("username");
-        // localStorage.removeItem("access_token");
-        // localStorage.removeItem("refresh_token");
+    async componentDidMount() {
+        const token = localStorage.getItem("refresh_token");
+        
         localStorage.clear();
+        this.props.appCallback('', '');
+
+        await fetch('http://localhost:3000/auth/logout', {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
     }
 
     render() { 
