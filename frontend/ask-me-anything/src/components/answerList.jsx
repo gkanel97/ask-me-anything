@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Trash from '../icons/trash';
 
 class AnswerCard extends Component {
     render() {
@@ -20,7 +21,9 @@ class AnswerCard extends Component {
                             <span className="text-muted list-fancy-text">Answered on {cDate.toLocaleString()}</span>
                         </div>
                         <div className="col-4" style={{ textAlign: "right" }}>
-                            <button className="btn btn-danger" onClick={this.props.onDelete}>Delete Me!</button>
+                            <button className="btn btn-danger" onClick={this.props.onDelete}>
+                                <Trash />
+                            </button>
                         </div>
                     </div>
                 </div>

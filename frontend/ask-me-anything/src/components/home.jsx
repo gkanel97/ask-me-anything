@@ -5,7 +5,6 @@ class Home extends Component {
     render() {
         return (
             <React.Fragment>
-                <h3>{JSON.stringify(this.props)}</h3>
                 <h2>Welcome to AskMeAnything</h2>
                 <div className="row" style={{ minHeight: "50vh" }}>
                     <div className="col-lg-5 my-2">
@@ -28,14 +27,14 @@ class Home extends Component {
                             <div className="col-12 mb-2">
                                 <NavLink to='/question/ask' style={{ textDecoration: 'none' }}>
                                     <div className="h-100 p-2 text-white bg-dark rounded-3 position-relative">
-                                        <p className="home-fancy-button">Create a question</p>
+                                        <h5 className="home-fancy-button">Create a question</h5>
                                     </div>
                                 </NavLink>
                             </div>
                             <div className="col-12 mt-2">
                                 <NavLink to='/question' style={{ textDecoration: 'none' }}>
                                     <div className="h-100 p-2 text-white bg-dark rounded-3 position-relative">
-                                        <p className="home-fancy-button">Answer a question</p>
+                                        <h5 className="home-fancy-button">Answer a question</h5>
                                     </div>
                                 </NavLink>
                             </div>

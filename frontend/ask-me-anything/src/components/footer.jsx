@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import FileText from '../icons/fileText';
+import Github from '../icons/github';
 
 class Footer extends Component {
     constructor(props) {
@@ -32,10 +34,16 @@ class Footer extends Component {
                                 <Link className="nav-link" to='/contact'>Contact Us</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link">Project Documentation</a>
+                                <a className="nav-link">
+                                    <FileText />
+                                    <span className="ms-1">Project Documentation</span>
+                                </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link">Github</a>
+                                <a className="nav-link">
+                                    <Github />
+                                    <span className="ms-1">Github</span>
+                                </a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="https://courses.pclab.ece.ntua.gr/course/view.php?id=34" target="_blank">Course Materials</a>

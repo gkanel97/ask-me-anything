@@ -11,7 +11,7 @@ class QuestionCard extends Component {
         return (
             <div className="card my-1" key={q.id}>
                 <div className="card-header">
-                    {q.questionTitle}
+                    <strong>{q.questionTitle}</strong>
                 </div>
                 <div className="card-body">
                     {q.questionText}
