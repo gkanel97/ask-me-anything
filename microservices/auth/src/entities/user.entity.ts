@@ -1,14 +1,14 @@
 import {
-    Entity, Column, PrimaryGeneratedColumn, Index, BeforeInsert
+    Entity, Column, PrimaryColumn, Index, OneToMany
 } from "typeorm";
 
-import * as bcrypt from 'bcrypt';
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { Exclude } from "class-transformer";
+import { RefreshToken } from "./refresh-token.entity";
 
 @Entity("users")
 export class User {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryColumn({ type: "uuid" })
     id: string;
 
     @Column({ unique: true })
@@ -30,8 +30,6 @@ export class User {
     @Column({ nullable: true })
     lastName: string;
 
-    @BeforeInsert()
-    async hashPassword() {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
+    @OneToMany(() => RefreshToken, token => token.user)
+    tokens: RefreshToken[];
 }
