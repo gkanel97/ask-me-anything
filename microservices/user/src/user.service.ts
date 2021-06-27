@@ -1,18 +1,22 @@
 import {
+  BadRequestException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
 } from "@nestjs/common";
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from "./entities/user.entity";
 import { EntityManager } from "typeorm";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
+import { AppService } from "./app.service";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectEntityManager() private manager: EntityManager) {}
+  constructor(
+      @InjectEntityManager() private manager: EntityManager,
+      private choreographerService: AppService
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     return this.manager.transaction(async manager => {
@@ -28,7 +32,14 @@ export class UserService {
       let newUserEntity = await this.manager.create(User, createUserDto);
       // Hashing is performed in the entity by a BeforeInsert trigger
       // newUserEntity.password = await bcrypt.hash(createUserDto.password, 10);
-      return manager.save(newUserEntity);
+      let newUser = await manager.save(newUserEntity);
+      const publishSuccess = await this.choreographerService.publishNewUser(newUser);
+      if (publishSuccess) {
+        return newUser;
+      }
+      else {
+        throw new BadRequestException("Publishing failed");
+      }
     });
   }
 
