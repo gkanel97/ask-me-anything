@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//redis.init();
+redis.init();
 
 app.use('/', indexRouter);
 
@@ -43,4 +43,5 @@ app.use(function(err, req, res, next) {
     const expose = status >= 500 && req.app.get('env') === 'development';
     res.end(expose ? message + "\n\n" + err.stack : message);
 });
+
 module.exports = app;
