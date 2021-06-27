@@ -1,9 +1,11 @@
 import {
-  Entity, Column, PrimaryColumn, CreateDateColumn, ManyToMany, UpdateDateColumn
+  Entity, Column, PrimaryColumn, CreateDateColumn, ManyToMany, UpdateDateColumn, ManyToOne, JoinColumn
 } from "typeorm";
 
 import { Keyword } from './keyword.entity';
 import { Length } from "class-validator";
+import { User } from "./user.entity";
+import { Exclude } from 'class-transformer';
 
 @Entity("questions")
 export class Question {
@@ -23,6 +25,11 @@ export class Question {
 
   @UpdateDateColumn()
   updateDate: Date;
+
+  @ManyToOne(() => User, user => user.questions, { onDelete: "CASCADE" })
+  @JoinColumn({ name: 'userID' })
+  @Exclude()
+  user: User;
 
   @ManyToMany(() => Keyword, keyword => keyword.questions)
   keywords: Keyword[];
