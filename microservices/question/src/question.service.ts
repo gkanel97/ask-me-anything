@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {BadRequestException, ForbiddenException, Injectable, NotFoundException} from "@nestjs/common";
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { User } from "./entities/user.entity";
@@ -6,9 +6,19 @@ import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager, getManager } from "typeorm";
 import { Question } from "./entities/question.entity";
 
+const axios = require('axios').default;
+
 @Injectable()
 export class QuestionService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
+
+  async publishNewQuestion(newQuestion: Question): Promise<boolean> {
+    const resp = await axios.post("http://localhost:4000/publishAsync", {
+      channel: "questions",
+      message: { type: "new-question", item: newQuestion }
+    });
+    return resp.status === 204;
+  }
 
   async create(createQuestionDto: CreateQuestionDto, uuid) {
     return this.manager.transaction(async innerManager => {
@@ -18,7 +28,14 @@ export class QuestionService {
       }
       const newQuestionObject = { user: user, ...createQuestionDto };
       const newQuestionEntity = await innerManager.create(Question, newQuestionObject);
-      return innerManager.save(newQuestionEntity);
+      let newQuestion = await innerManager.save(newQuestionEntity);
+      const publishSuccess = await this.publishNewQuestion(newQuestion);
+      if (publishSuccess) {
+        return newQuestion;
+      }
+      else {
+        throw new BadRequestException("Publishing failed");
+      }
     });
   }
 

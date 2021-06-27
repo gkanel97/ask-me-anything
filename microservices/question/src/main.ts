@@ -1,8 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+const axios = require('axios');
+async function subscribeToChannels(): Promise<boolean> {
+  const resp = await axios.post("http://localhost:4000/subscribeAsync", {
+    address: "http://localhost:3003/sync/getUserEvent",
+    channels: ["users"]
+  });
+  return resp.status === 200;
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  await app.listen(3003);
+
+  await subscribeToChannels()
 }
 bootstrap();
