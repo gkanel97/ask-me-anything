@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AppService } from './app.service';
+import { User } from "./entities/user.entity";
 
-@Controller()
+@Controller('sync')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('getUserEvent')
+  async getUserEvent(@Body('type') type: string, @Body('item') user: User) {
+    return this.appService.getUserEvent(user);
   }
 }

@@ -10,6 +10,10 @@ import { InjectEntityManager } from "@nestjs/typeorm";
 export class UserService {
     constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+    async addUser(user: User): Promise<User> {
+        return await this.manager.save(User, user);
+    }
+
     async findByUsername(username: string): Promise<User> {
         const user = await this.manager.findOne(User, {username: username});
         if (!user) {
