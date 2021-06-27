@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const createError = require('http-errors');
 const logger = require('morgan');
 
+const redis = require("./redis");
 const indexRouter = require('./routes/index');
 
 const app = express();
@@ -13,6 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//redis.init();
 
 app.use('/', indexRouter);
 
