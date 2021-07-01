@@ -9,7 +9,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor
+  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor, ForbiddenException
 } from "@nestjs/common";
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -33,14 +33,16 @@ export class QuestionController {
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   deleteMyQuestion(@Param('questionId', ParseIntPipe) questionId: number, @Request() req) {
-    return this.questionService.delete(questionId, req.user);
+    // return this.questionService.delete(questionId, req.user);
+    throw new ForbiddenException();
   }
 
   @Post('update/:questionId')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   updateMyQuestion(@Param('questionId', ParseIntPipe) questionId: number, @Body() updateQuestionDto: UpdateQuestionDto, @Request() req) {
-    return this.questionService.update(questionId, updateQuestionDto, req.user);
+    // return this.questionService.update(questionId, updateQuestionDto, req.user);
+    throw new ForbiddenException();
   }
 
   @Get('getOne/:id')
