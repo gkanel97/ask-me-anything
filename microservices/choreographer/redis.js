@@ -7,8 +7,8 @@ async function init() {
     const client = redis.createClient();
     const setAsync = promisify(client.hmset).bind(client);
     const emptyList = JSON.stringify([]);
-    await setAsync("subscribers", "users", emptyList, "questions", emptyList, "answers", emptyList);
-    await setAsync("messages", "users", emptyList, "questions", emptyList, "answers", emptyList);
+    await setAsync("subscribers", "users", emptyList, "questions", emptyList, "keywords", emptyList);
+    await setAsync("messages", "users", emptyList, "questions", emptyList, "keywords", emptyList);
 
     // Close the client in an elegant way
     client.quit();
