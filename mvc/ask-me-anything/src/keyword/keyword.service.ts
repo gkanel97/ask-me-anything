@@ -52,7 +52,14 @@ export class KeywordService {
   }
 
   async getQuestionsPerKeyword() {
-    return this.manager.query("SELECT keywordText, COUNT(questionId) FROM (question_tags) GROUP BY (keywordText);");
+    // return this.manager.query("SELECT keywordText, COUNT(questionId) FROM (question_tags) GROUP BY (keywordText);");
+    return this.manager
+      .createQueryBuilder()
+      .select("keywordText", "keyword")
+      .addSelect("COUNT(questionId)", "count")
+      .from("question_tags", "qt")
+      .groupBy("keywordtext")
+      .getRawMany();
   }
 }
 

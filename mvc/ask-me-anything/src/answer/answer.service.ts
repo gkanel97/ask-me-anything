@@ -69,11 +69,34 @@ export class AnswerService {
     });
  }
 
-  async getAnswersPerDay(n) {
-    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+  async getAnswersPerDay(n: number) {
+    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+    const firstDay = new Date();
+    firstDay.setDate(firstDay.getDate() - n);
+
+    return this.manager
+      .createQueryBuilder(Answer, "ans")
+      .select("DATE(updateDate)", "date")
+      .addSelect("COUNT(id)", "count")
+      .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .groupBy("date")
+      .orderBy("date", "DESC")
+      .getRawMany();
   }
 
   async getMyAnswersPerDay(n: number, uuid: string) {
-    return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
+    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
+    const firstDay = new Date();
+    firstDay.setDate(firstDay.getDate() - n);
+
+    return this.manager
+      .createQueryBuilder(Answer, "ans")
+      .select("DATE(updateDate)", "date")
+      .addSelect("COUNT(id)", "count")
+      .where("userID = :userId", {userId: uuid})
+      .andWhere("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .groupBy("date")
+      .orderBy("date", "DESC")
+      .getRawMany();
   }
 }
