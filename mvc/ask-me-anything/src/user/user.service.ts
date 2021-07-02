@@ -16,6 +16,7 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // create generates a new user with a unique username and e-mail address.
   async create(createUserDto: CreateUserDto): Promise<User> {
     return this.manager.transaction(async manager => {
       const user = await manager.findOne(User, {
@@ -51,12 +52,15 @@ export class UserService {
     return user;
   }
 
+  // updateName changes the first and last name of a specific user.
   async updateName(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
     return this.manager.transaction(async manager => {
       const user = await manager.findOne(User, uuid);
       if (!user) {
         throw new NotFoundException();
       }
+
+      // manager.merge is equivalent to:
       // user.firstName = updateUserDto.firstName;
       // user.lastName = updateUserDto.lastName;
       manager.merge(User, user, updateUserDto);
@@ -64,6 +68,8 @@ export class UserService {
     });
   }
 
+  // updatePassword changes the password of a specific user. It may be useful when a user has
+  // forgotten their password and wants to reset it.
   async updatePassword(uuid: string, password: string): Promise<User> {
     return this.manager.transaction(async manager => {
       const user = await manager.findOne(User, { id: uuid });

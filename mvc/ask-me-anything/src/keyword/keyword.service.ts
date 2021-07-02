@@ -17,7 +17,7 @@ export class KeywordService {
     return this.manager.save(keyword);
   }
 
-  // Search returns at most n keywords starting with "text"
+  // search function returns at most n keywords starting with "text"
   // If no text is given, this function returns at most n keywords
   async search(n: number, text: string) {
     if (text) {
@@ -35,6 +35,8 @@ export class KeywordService {
     }
   }
 
+  // tagQuestion adds a keyword to a given question. Both the question and the keyword must already exist.
+  // The ORM is not used in this function to avoid performance degradation.
   async tagQuestion(questionId: number, keywordText: string) {
     return this.manager.transaction(async innerManager => {
       const keyword = await innerManager.findOne(Keyword, keywordText);
@@ -45,14 +47,18 @@ export class KeywordService {
       if (!question) {
         throw new NotFoundException(`Question with id ${questionId} does not exist`);
       }
+
+      // The following raw SQL query is equivalent to:
       // keyword.questions.push(question);
       // return innerManager.save(keyword);
       await this.manager.query("INSERT INTO question_tags (keywordText, questionId) VALUES ($1, $2)", [keywordText, questionId]);
     });
   }
 
+  // getQuestionsPerKeyword counts the number of questions that have been tagged with each keyword.
+  // The resulting query is equivalent to:
+  // SELECT keywordText, COUNT(questionId) FROM (question_tags) GROUP BY (keywordText);
   async getQuestionsPerKeyword() {
-    // return this.manager.query("SELECT keywordText, COUNT(questionId) FROM (question_tags) GROUP BY (keywordText);");
     return this.manager
       .createQueryBuilder()
       .select("keywordText", "keyword")
@@ -62,4 +68,3 @@ export class KeywordService {
       .getRawMany();
   }
 }
-
