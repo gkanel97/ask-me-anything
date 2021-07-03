@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { AUTH_BASE_URL } from '../configuration/URLS';
 
 class Signout extends Component {
     
@@ -9,7 +10,7 @@ class Signout extends Component {
         localStorage.clear();
         this.props.appCallback('', '');
 
-        await fetch('http://localhost:3000/auth/logout', {
+        await fetch(`${AUTH_BASE_URL}/logout`, {
             method: "POST",
             mode: "cors",
             headers: {
