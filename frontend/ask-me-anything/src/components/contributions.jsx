@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { httpGetProtected, httpPostProtected } from '../scripts/requests';
 import QuestionList from './questionList';
 import AnswerList from './answerList';
+import { ANSWER_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
 
 class Contributions extends Component {
     constructor(props) {
@@ -12,14 +13,13 @@ class Contributions extends Component {
             answers: []
         };
         this.setActiveTabIndex = this.setActiveTabIndex.bind(this);
-        this.deleteQuestion = this.deleteQuestion.bind(this);
         this.deleteAnswer = this.deleteAnswer.bind(this);
     }
 
     componentDidMount() {
         Promise.all([
-            httpGetProtected('http://localhost:3000/question/getMy/20'),
-            httpGetProtected('http://localhost:3000/answer/getMy/20')
+            httpGetProtected(`${QUESTION_BASE_URL}/getMy/20`),
+            httpGetProtected(`${ANSWER_BASE_URL}/getMy/20`)
         ])
         .then(([qR, aR]) => {
             this.setState({
@@ -36,21 +36,20 @@ class Contributions extends Component {
         });
     }
 
-    deleteQuestion(event) {
-        const sure = confirm("Are you sure you want to delete this question?");
-
-        if (sure) {
-            const id = parseInt(event.target.value);
-            httpPostProtected(`http://localhost:3000/question/delete/${id}`)
-        }
-    }
-
     deleteAnswer(event) {
         const sure = confirm("Are you sure you want to delete this answer?");
 
         if (sure) {
-            const id = parseInt(event.target.value);
-            httpPostProtected(`http://localhost:3000/answer/delete/${id}`)
+            const id = parseInt(event.currentTarget.value);
+            httpPostProtected(`${ANSWER_BASE_URL}/delete/${id}`)
+            .then(() => {
+                httpGetProtected(`${ANSWER_BASE_URL}/getMy/20`)
+                .then(payload => {
+                    this.setState({
+                        answers: payload
+                    })
+                })
+            })
         }
     }
 
@@ -72,7 +71,7 @@ class Contributions extends Component {
                 </ul>
                 <div class="tab-content" id="contributionsContent">
                     <div className={`tab-pane fade ${questionsTabActive ? "show active" : ""} mt-2`} id="questions" role="tabpanel" aria-labelledby="questions-tab">
-                        <QuestionList questions={this.state.questions} onDelete={this.deleteQuestion} />
+                        <QuestionList questions={this.state.questions} />
                     </div>
                     <div className={`tab-pane fade ${answersTabActive ? "show active" : ""} mt-2`} id="answers" role="tabpanel" aria-labelledby="answers-tab">
                         <AnswerList answers={this.state.answers} onDelete={this.deleteAnswer} />
