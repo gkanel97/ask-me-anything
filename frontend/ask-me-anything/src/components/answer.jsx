@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { ANSWER_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
 import { fetchProtected } from '../scripts/auth';
 
 class Answer extends Component {
@@ -21,7 +22,7 @@ class Answer extends Component {
     }
 
     componentDidMount() {
-        fetchProtected(`http://localhost:3000/question/getOne/${this.props.match.params.questionId}`, {
+        fetchProtected(`${QUESTION_BASE_URL}/getOne/${this.props.match.params.questionId}`, {
             method: "GET",
             mode: "cors"
         })
@@ -30,14 +31,14 @@ class Answer extends Component {
             this.setState({
                 title: payload.questionTitle,
                 text: payload.questionText,
-                answers: payload.answers
+                answers: payload.answers.reverse()
             })
         })
     }
 
     handleFormSubmission(e) {
         e.preventDefault();
-        fetchProtected('http://localhost:3000/answer/create', {
+        fetchProtected(`${ANSWER_BASE_URL}/create`, {
             method: "POST",
             mode: "cors",
             headers: {
@@ -49,7 +50,12 @@ class Answer extends Component {
             })
         })
         .then(response => response.json())
-        .then(payload => alert(JSON.stringify(payload)));
+        .then(payload => {
+            this.setState({
+                user_answer: '',
+                answers: [payload, ...this.state.answers ]
+            })
+        });
     }
 
     render() {
@@ -69,7 +75,7 @@ class Answer extends Component {
                 <h3>Other Answers</h3>
                 <br />
                 <ul className="list-group">
-                    {this.state.answers.map(answer => <li className="list-group-item" key={answer.id}>{answer.answerText}</li>)}
+                    {this.state.answers.map(answer => <li className="list-group-item my-1" key={answer.id}>{answer.answerText}</li>)}
                 </ul>
             </React.Fragment>
         );
