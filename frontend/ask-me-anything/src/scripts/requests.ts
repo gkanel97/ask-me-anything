@@ -1,13 +1,4 @@
-import { fetchProtected } from "./auth"
-
-class FetchError extends Error {
-    status: number;
-    constructor(status: number, message: string) {
-        super(`STATUS: ${status}\nMESSAGE: ${message}`);
-        this.name = "FetchError";
-        this.status = status;
-    }
-}
+import { fetchProtected, FetchError } from "./auth";
 
 async function httpPost(url: string, data: object, init?: ResponseInit): Promise<any> {
     return fetch(url, {

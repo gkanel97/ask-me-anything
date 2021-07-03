@@ -2,6 +2,15 @@ function decode(token: any) {
     return JSON.parse(atob(token.split('.')[1]));
 }
 
+class FetchError extends Error {
+    status: number;
+    constructor(status: number, message: string) {
+        super(`STATUS: ${status}\nMESSAGE: ${message}`);
+        this.name = "FetchError";
+        this.status = status;
+    }
+}
+
 async function fetchProtected(url: RequestInfo, init: RequestInit): Promise<Response> {
     const access_token = localStorage.getItem("access_token");
 
@@ -62,4 +71,4 @@ function isValidToken(token: string): boolean {
     }
 }
 
-export { fetchProtected, isValidToken };
+export { fetchProtected, isValidToken, FetchError };
