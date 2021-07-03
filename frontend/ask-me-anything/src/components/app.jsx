@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "./header";
 import Footer from "./footer";
-import Content from "./content";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { isValidToken } from "../scripts/auth";
 
@@ -11,11 +10,12 @@ import Signup from "./signup";
 import Signin from './signin';
 import Signout from "./signout";
 import Question from './question';
-import { CreateQuestion, UpdateQuestion } from "./question";
 import Answer from "./answer";
 import MyHome from "./myHome";
 import NotFoundError from "./error";
 import Contributions from "./contributions";
+import QuestionHome from "./questionHome";
+import Terms from "./terms";
 
 class App extends React.Component {
     constructor(props) {
@@ -77,6 +77,7 @@ class App extends React.Component {
                         <Route exact path='/' component={Home} />
                         <Route exact path='/about' component={About} />
                         <Route exact path='/contact' component={About} />
+                        <Route exact path='/terms' component={Terms} />
 
                         {/* AUTH ROUTES */}
                         <Route exact path='/auth/signin' render={
@@ -96,10 +97,8 @@ class App extends React.Component {
                         <Route exact path='/account/contributions' render={this.renderProtected(Contributions)} />
 
                         {/* QUESTIONS ROUTES */}
-                        <Route exact path='/question' component={Question} />
-                        <Route exact path='/question/ask' render={this.renderProtected(CreateQuestion)} />
-                        <Route exact path='/question/stats' component={Question} />
-                        <Route exact path='/question/update/:questionId' render={this.renderProtected(UpdateQuestion)} />
+                        <Route exact path='/question' component={QuestionHome} />
+                        <Route exact path='/question/ask' render={this.renderProtected(Question)} />
                         <Route exact path='/question/answer/:questionId' render={this.renderProtected(Answer)} />
 
                         {/* ERROR ROUTES */}
