@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fetchProtected } from '../scripts/auth.ts';
+import { KEYWORD_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
 import { httpGet, httpGetProtected, httpPostProtected } from '../scripts/requests';
 
 function KeywordBadgeList(props) {
@@ -25,7 +25,7 @@ function KeywordDropdown(props) {
     );
 
     const createButton = (
-        <li><button className="dropdown-item" type="button" value={props.current} onClick={props.onClickCreate}>Create...</button></li>
+        <li><button className="dropdown-item" type="button" value={props.current} onClick={props.onClickCreate}>{props.current}</button></li>
     );
 
     return (
@@ -56,19 +56,6 @@ class Question extends Component {
         this.clearKeywordList = this.clearKeywordList.bind(this);
     }
 
-    componentDidMount() {
-        if (!this.props.isCreate) {
-            httpGetProtected(`http://localhost:3000/question/getOne/${this.props.match.params.questionId}`)
-            .then(payload => {
-                this.setState({
-                    title: payload.questionTitle,
-                    text: payload.questionText,
-                    keywordsBadgeList: payload.keywords.map(k => k.keywordText)
-                });
-            });
-        }
-    }
-
     setInputValue(event) {
         this.setState({
             [event.target.name]: event.target.value
@@ -81,12 +68,12 @@ class Question extends Component {
         })
 
         if (event.target.value) {
-            httpGet(`http://localhost:3000/keyword/search/5?text=${event.target.value}`)
-                .then(payload => {
-                    this.setState({
-                        keywordsDropdownList: payload.map(keyword_obj => keyword_obj.keywordText)
-                    });
+            httpGet(`${KEYWORD_BASE_URL}/search/5?text=${event.target.value}`)
+            .then(payload => {
+                this.setState({
+                    keywordsDropdownList: payload.map(keyword_obj => keyword_obj.keywordText)
                 });
+            });
         }
         else {
             this.setState({
@@ -99,29 +86,34 @@ class Question extends Component {
         event.preventDefault();
         if (!this.state.keywordsBadgeList.includes(event.target.value)) {
             this.setState({
-                keywordsBadgeList: [event.target.value, ...this.state.keywordsBadgeList]
+                keywordsBadgeList: [event.target.value, ...this.state.keywordsBadgeList],
+                keywordsDropdownList: [],
+                keywordText: ""
             });
         }
     }
 
     createKeyword(event) {
-        httpPostProtected('http://localhost:3000/keyword/create', {
+        httpPostProtected(`${KEYWORD_BASE_URL}/create`, {
             keywordText: event.target.value
         })
-            .then(payload => {
-                this.setState({
-                    keywordsDropdownList: [payload.keywordText]
-                })
+        .then(payload => {
+            this.setState({
+                // keywordsDropdownList: [payload.keywordText]
+                keywordsBadgeList: [payload.keywordText, ...this.state.keywordsBadgeList],
+                keywordsDropdownList: [],
+                keywordText: ""
             })
+        })
     }
 
     clearKeywordText(event) {
-        if (event.keyCode === 27) {
+        // if (event.keyCode === 27) {
             this.setState({
                 keywordText: "",
                 keywordsDropdownList: []
             })
-        }
+        // }
     }
 
     clearKeywordList(event) {
@@ -137,17 +129,19 @@ class Question extends Component {
         const { title, text, keywordsBadgeList } = this.state;
 
         try {
-            const question = await httpPostProtected('http://localhost:3000/question/create', {
+            const question = await httpPostProtected(`${QUESTION_BASE_URL}/create`, {
                 questionTitle: title,
                 questionText: text
             });
 
             for (let kw of keywordsBadgeList) {
-                await httpPostProtected('http://localhost:3000/keyword/tag', {
+                await httpPostProtected(`${KEYWORD_BASE_URL}/tag`, {
                     questionId: question.id,
                     keywordText: kw
                 })
             }
+
+            this.props.history.push("/account/contributions");
         }
         catch (e) {
             console.log(e);
@@ -157,7 +151,7 @@ class Question extends Component {
     render() {
         return (
             <React.Fragment>
-                <h2>{this.props.isCreate ? "Ask a question" : "Update your question"}</h2>
+                <h2>Ask a question</h2>
                 <hr />
                 <form onSubmit={this.handleFormSubmission}>
                     <div className="mb-3">
@@ -182,7 +176,8 @@ class Question extends Component {
                                 style={{ width: "100%", display: "flex", borderTopRightRadius: "0", borderBottomRightRadius: "0" }} 
                                 value={this.state.keywordText} 
                                 onChange={this.setKeywordValue} 
-                                onKeyDown={this.clearKeywordText} 
+                                // onKeyDown={this.clearKeywordText}
+                                // onBlur={this.clearKeywordText}
                             />
                             <KeywordDropdown 
                                 keywords={this.state.keywordsDropdownList} 
@@ -200,10 +195,10 @@ class Question extends Component {
                     </div>
                     <button 
                         type="submit" 
-                        className={`btn ${this.props.isCreate ? "btn-primary" : "btn-danger"}`} 
+                        className="btn btn-primary"
                         disabled={!(this.state.title && this.state.text)}
                     >
-                        {this.props.isCreate ? "Create Question" : "Update Question"}
+                        Create Question
                     </button>
                 </form>
             </React.Fragment>
@@ -211,13 +206,4 @@ class Question extends Component {
     }
 }
 
-function CreateQuestion(props) {
-    return <Question {...props} isCreate={true} />
-}
-
-function UpdateQuestion(props) {
-    return <Question {...props} isCreate={false} />
-}
-
 export default Question;
-export  { CreateQuestion, UpdateQuestion };
