@@ -29,6 +29,12 @@ export class KeywordController {
     return this.keywordService.search(n, text);
   }
 
+  @Get('filterQuestionsByKeyword/:n')
+  filterQuestionsByKeyword(@Param('n', ParseIntPipe) n:number, @Query('text') text:string) {
+    return this.keywordService.filterQuestionsByKeyword(n, text);
+  }
+
+
   @Post('tag')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -36,9 +42,9 @@ export class KeywordController {
     return this.keywordService.tagQuestion(questionId, keywordText);
   }
 
-  @Get('questionsPerKeyword')
+  @Get('questionsPerKeyword/:n')
   @HttpCode(200)
-  getQuestionsPerKeyword() {
-    return this.keywordService.getQuestionsPerKeyword();
+  getQuestionsPerKeyword(@Param('n', ParseIntPipe) n: number) {
+    return this.keywordService.getQuestionsPerKeyword(n);
   }
 }
