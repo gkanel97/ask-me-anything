@@ -1,3 +1,5 @@
+import { AUTH_BASE_URL } from "../configuration/URLS";
+
 function decode(token: any) {
     return JSON.parse(atob(token.split('.')[1]));
 }
@@ -20,7 +22,7 @@ async function fetchProtected(url: RequestInfo, init: RequestInit): Promise<Resp
         if (Date.now() >= exp * 1000) {
             const refresh_token = localStorage.getItem("refresh_token");
 
-            fetch('http://localhost:3000/auth/refresh', {
+            fetch(`${AUTH_BASE_URL}/refresh`, {
                 method: "POST",
                 mode: "cors",
                 headers: {
