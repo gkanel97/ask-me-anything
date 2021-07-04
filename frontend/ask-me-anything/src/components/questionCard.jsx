@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import FileText from "../icons/fileText";
+import KeywordBadgeList from './keywordBadgeList';
 
 class QuestionCard extends Component {
     render() {
@@ -14,6 +15,18 @@ class QuestionCard extends Component {
                 </div>
                 <div className="card-body">
                     {q.questionText}
+                    {
+                        q.keywords?.length > 0
+                        ?
+                            <React.Fragment>
+                                <hr />
+                                <div className="">
+                                    <KeywordBadgeList tags={q.keywords.map(k => k.keywordText)} />
+                                </div>
+                            </React.Fragment>
+                        :
+                            null
+                    }
                 </div>
                 <div className="card-footer">
                     <div className="row">

@@ -1,19 +1,7 @@
 import React, { Component } from 'react';
+import KeywordBadgeList from './keywordBadgeList';
 import { KEYWORD_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
 import { httpGet, httpGetProtected, httpPostProtected } from '../scripts/requests';
-
-function KeywordBadgeList(props) {
-    const tags = props.tags;
-    const bagdeList = tags.map((t, i) => 
-        <span className="badge bg-info text-dark m-1" key={i}>{t}</span>
-    );
-
-    return (
-        <React.Fragment>
-            {bagdeList}
-        </React.Fragment>
-    );
-}
 
 function KeywordDropdown(props) {
     const keywords = props.keywords;
@@ -52,7 +40,7 @@ class Question extends Component {
         this.handleFormSubmission = this.handleFormSubmission.bind(this);
         this.addKeyword = this.addKeyword.bind(this);
         this.createKeyword = this.createKeyword.bind(this);
-        this.clearKeywordText = this.clearKeywordText.bind(this);
+        this.keywordAddOnEnter = this.keywordAddOnEnter.bind(this);
         this.clearKeywordList = this.clearKeywordList.bind(this);
     }
 
@@ -91,6 +79,12 @@ class Question extends Component {
                 keywordText: ""
             });
         }
+        else {
+            this.setState({
+                keywordsDropdownList: [],
+                keywordText: ""
+            });
+        }
     }
 
     createKeyword(event) {
@@ -107,13 +101,36 @@ class Question extends Component {
         })
     }
 
-    clearKeywordText(event) {
-        // if (event.keyCode === 27) {
+    clearkeywordText(event) {
+        //ESC: 27
+        if (event.keyCode === 27) {
             this.setState({
                 keywordText: "",
                 keywordsDropdownList: []
             })
-        // }
+        }
+    }
+
+    keywordAddOnEnter(event) {
+        //Enter: 13
+        if (event.keyCode === 13) {
+            // CAUTION!!!
+            // event.preventDefault() is MANDATORY because otherwise <enter> causes the Clear button to be clicked!!
+            event.preventDefault();
+            const { keywordText, keywordsDropdownList } = this.state;
+
+            if(!keywordText) return;
+
+            //sneeky workaround for DRY
+            const fooEvent = {target: {value: keywordText}};
+
+            if (keywordText in keywordsDropdownList) {
+                this.addKeyword(fooEvent);
+            }
+            else {
+                this.createKeyword(fooEvent);
+            }
+        }
     }
 
     clearKeywordList(event) {
@@ -176,8 +193,7 @@ class Question extends Component {
                                 style={{ width: "100%", display: "flex", borderTopRightRadius: "0", borderBottomRightRadius: "0" }} 
                                 value={this.state.keywordText} 
                                 onChange={this.setKeywordValue} 
-                                // onKeyDown={this.clearKeywordText}
-                                // onBlur={this.clearKeywordText}
+                                onKeyDown={this.keywordAddOnEnter}
                             />
                             <KeywordDropdown 
                                 keywords={this.state.keywordsDropdownList} 

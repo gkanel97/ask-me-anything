@@ -33,7 +33,7 @@ class Home extends Component {
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: 'Questions per day',
+                        label: '# Questions',
                         data: await formatData(),
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgba(54, 162, 235, 1)',
@@ -57,6 +57,14 @@ class Home extends Component {
                         legend: {
                             display: false
                         }
+                    },
+                    scales: {
+                        yAxis: {
+                            ticks: {
+                                precision: 0,
+                                stepSize: 1
+                            }
+                        }
                     }
                 }
             };
@@ -70,8 +78,8 @@ class Home extends Component {
                 type: 'bar',
                 data: {
                     datasets: [{
-                        label: 'Questions per day',
-                        data: await httpGet(`${KEYWORD_BASE_URL}/questionsPerKeyword`),
+                        label: '# Questions',
+                        data: await httpGet(`${KEYWORD_BASE_URL}/questionsPerKeyword/10`),
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         parsing: {

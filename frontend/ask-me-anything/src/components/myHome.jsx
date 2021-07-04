@@ -31,7 +31,7 @@ class MyHome extends Component {
             type: 'bar',
             data: {
                 datasets: [{
-                    label: 'Questions per day',
+                    label: 'Questions',
                     data: await formatData(`${QUESTION_BASE_URL}/getMyQuestionsPerDay/7`),
                     backgroundColor: 'rgba(54, 162, 235, 0.9)',
                     borderColor: 'rgba(54, 162, 235, 1)',
@@ -41,7 +41,7 @@ class MyHome extends Component {
                     }
                 },
                 {
-                    label: 'Answers per day',
+                    label: 'Answers',
                     data: await formatData(`${ANSWER_BASE_URL}/getMyAnswersPerDay/7`),
                     backgroundColor: 'rgba(255, 159, 64, 0.9)',
                     borderColor: 'rgba(255, 159, 64, 1)',

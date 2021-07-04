@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Trash from '../icons/trash';
 
 function AnswerCardCustomFooter(props) {
@@ -31,7 +32,7 @@ class AnswerCard extends Component {
         return (
             <div className="card my-1" key={a.id}>
                 <div className="card-header">
-                    <span className="fw-bold fst-italic">Question:</span> {a.question.questionTitle}
+                    <span className="fw-bold fst-italic">Question:</span> <Link to={`/question/answer/${a.question.id}`}>{a.question.questionTitle}</Link>
                 </div>
                 <div className="card-body">
                     {a.answerText}
