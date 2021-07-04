@@ -9,7 +9,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor, ForbiddenException
+  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor, ForbiddenException, Query
 } from "@nestjs/common";
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -62,6 +62,12 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   getMy(@Param('n', ParseIntPipe) n: number, @Request() req) {
     return this.questionService.getMy(n, req.user);
+  }
+
+  @Get('searchByTitle/:n')
+  @HttpCode(200)
+  searchByTitle(@Param('n', ParseIntPipe) n:number, @Query('title') title: string) {
+    return this.questionService.searchByTitle(n, title);
   }
 
   @Get('getQuestionsPerDay/:n')

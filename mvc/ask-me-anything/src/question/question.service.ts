@@ -3,7 +3,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { User } from "../user/entities/user.entity";
 import { InjectEntityManager } from "@nestjs/typeorm";
-import { EntityManager, getManager } from "typeorm";
+import { EntityManager, getManager, ILike } from "typeorm";
 import { Question } from "./entities/question.entity";
 import { first } from "rxjs/operators";
 
@@ -70,6 +70,22 @@ export class QuestionService {
         updateDate: "DESC"
       }
     });
+  }
+
+  // searchByTitle finds at most n question whose title contain "text" at any position.
+  // If no "text" is given, this function returns null
+  async searchByTitle(n: number, text: string) {
+    if (text) {
+      return this.manager.find(Question, {
+        where: {
+          questionTitle: ILike(`%${text}%`)
+        },
+        take: n
+      });
+    }
+    else {
+      return null;
+    }
   }
 
   async getQuestionsPerDay(n: number) {
