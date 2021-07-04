@@ -5,7 +5,6 @@ import { User } from "../user/entities/user.entity";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager, getManager, ILike } from "typeorm";
 import { Question } from "./entities/question.entity";
-import { first } from "rxjs/operators";
 
 @Injectable()
 export class QuestionService {
@@ -55,7 +54,7 @@ export class QuestionService {
   }
 
   async getMany(n: number) {
-    return this.manager.find(Question, { take: n, order: { updateDate: "DESC" } });
+    return this.manager.find(Question, { take: n, order: { updateDate: "DESC" }, relations: ["keywords"] });
   }
 
   async getMy(n: number, uuid: string) {
@@ -95,9 +94,9 @@ export class QuestionService {
 
     return this.manager
       .createQueryBuilder(Question, "q")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "DESC")
       .getRawMany();
@@ -111,10 +110,10 @@ export class QuestionService {
 
     return this.manager
       .createQueryBuilder(Question, "q")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("userID = :userId", {userId: uuid})
-      .andWhere("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"userID" = :userId', {userId: uuid})
+      .andWhere('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "ASC")
       .getRawMany();
