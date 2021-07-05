@@ -86,9 +86,9 @@ export class AnswerService {
 
     return this.manager
       .createQueryBuilder(Answer, "ans")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "DESC")
       .getRawMany();
@@ -102,10 +102,10 @@ export class AnswerService {
 
     return this.manager
       .createQueryBuilder(Answer, "ans")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("userID = :userId", {userId: uuid})
-      .andWhere("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"userID" = :userId', {userId: uuid})
+      .andWhere('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "DESC")
       .getRawMany();

@@ -51,14 +51,14 @@ export class KeywordService {
       // The following raw SQL query is equivalent to:
       // keyword.questions.push(question);
       // return innerManager.save(keyword);
-      await this.manager.query("INSERT INTO question_tags (keywordText, questionId) VALUES ($1, $2)", [keywordText, questionId]);
+      await this.manager.query('INSERT INTO question_tags ("keywordText", "questionId") VALUES ($1, $2)', [keywordText, questionId]);
     });
   }
 
   // filterQuestionsByKeyword finds at most n questions tagged with a keyword that contains "text"
   async filterQuestionsByKeyword(n, text) {
     return this.manager
-      .query("SELECT q.* FROM questions q INNER JOIN question_tags qt ON q.id = qt.questionId WHERE qt.keywordText LIKE $1 LIMIT $2", [`%${text}%`, n]);
+      .query('SELECT q.* FROM questions q INNER JOIN question_tags qt ON q.id = qt."questionId" WHERE qt."keywordText" LIKE $1 LIMIT $2', [`%${text}%`, n]);
   }
 
   // getQuestionsPerKeyword counts the number of questions that have been tagged with each keyword.
@@ -67,10 +67,10 @@ export class KeywordService {
   async getQuestionsPerKeyword(n) {
     return this.manager
       .createQueryBuilder()
-      .select("keywordText", "keyword")
-      .addSelect("COUNT(questionId)", "count")
+      .select('"keywordText"', "keyword")
+      .addSelect('COUNT("questionId")', "count")
       .from("question_tags", "qt")
-      .groupBy("keywordText")
+      .groupBy('"keywordText"')
       .orderBy("count", "DESC")
       .limit(n)
       .getRawMany();

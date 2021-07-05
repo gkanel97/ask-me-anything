@@ -5,7 +5,6 @@ import { User } from "../user/entities/user.entity";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager, getManager, ILike } from "typeorm";
 import { Question } from "./entities/question.entity";
-import { first } from "rxjs/operators";
 
 @Injectable()
 export class QuestionService {
@@ -30,7 +29,7 @@ export class QuestionService {
         throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
       }
       if (question.user.id !== uuid) {
-        throw new ForbiddenException("You ain't gonna delete other people's questions, you BIATCH");
+        throw new ForbiddenException("You can't delete another user's question");
       }
       await innerManager.delete(Question, questionId);
     });
@@ -43,7 +42,7 @@ export class QuestionService {
         throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
       }
       if (question.user.id !== uuid) {
-        throw new ForbiddenException("You ain't gonna delete other people's questions, you BIATCH");
+        throw new ForbiddenException("You can't update another user's question");
       }
       innerManager.merge(Question, question, updateQuestionDto);
       return innerManager.save(question);
@@ -55,7 +54,7 @@ export class QuestionService {
   }
 
   async getMany(n: number) {
-    return this.manager.find(Question, { take: n, order: { updateDate: "DESC" } });
+    return this.manager.find(Question, { take: n, order: { updateDate: "DESC" }, relations: ["keywords"] });
   }
 
   async getMy(n: number, uuid: string) {
@@ -88,6 +87,21 @@ export class QuestionService {
     }
   }
 
+  // searchByDate finds at most n question created on "date".
+  // If no "date" is given, this function returns null
+  async searchByDate(n: number, date: string) {
+    if (date) {
+      return this.manager
+        .createQueryBuilder(Question, "q")
+        .where('"updateDate"::date = :requestedDate', { requestedDate: date })
+		.orderBy('"updateDate"', "DESC")
+        .getMany();
+    }
+    else {
+      return null;
+    }
+  }
+
   async getQuestionsPerDay(n: number) {
     // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
     const firstDay = new Date();
@@ -95,9 +109,9 @@ export class QuestionService {
 
     return this.manager
       .createQueryBuilder(Question, "q")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "DESC")
       .getRawMany();
@@ -111,10 +125,10 @@ export class QuestionService {
 
     return this.manager
       .createQueryBuilder(Question, "q")
-      .select("DATE(updateDate)", "date")
+      .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
       .addSelect("COUNT(id)", "count")
-      .where("userID = :userId", {userId: uuid})
-      .andWhere("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+      .where('"userID" = :userId', {userId: uuid})
+      .andWhere('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
       .groupBy("date")
       .orderBy("date", "ASC")
       .getRawMany();
