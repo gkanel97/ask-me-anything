@@ -7,10 +7,26 @@ function decode(token: any) {
 class FetchError extends Error {
     status: number;
     constructor(status: number, message: string) {
-        super(`STATUS: ${status}\nMESSAGE: ${message}`);
+        super(message);
         this.name = "FetchError";
         this.status = status;
     }
+
+    toJSON() {
+        return {
+            name: this.name,
+            status: this.status,
+            message: this.message
+        };
+    }
+
+    toString() {
+        return `FetchError({status: ${this.status}, message: ${this.message}})`;
+    }
+}
+
+FetchError.prototype.toString = function() {
+    return `FetchError({status: ${this.status}, message: ${this.message}})`
 }
 
 async function fetchProtected(url: RequestInfo, init: RequestInit): Promise<Response> {

@@ -10,7 +10,7 @@ async function httpPost(url: string, data: object, init?: ResponseInit): Promise
         body: JSON.stringify(data),
         ...init
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             if (parseInt(response.headers.get("Content-Length") || "0") !== 0) {
                 return response.json();
@@ -20,7 +20,8 @@ async function httpPost(url: string, data: object, init?: ResponseInit): Promise
             }
         }
         else {
-            throw new FetchError(response.status, response.statusText);
+            const errorResponse = await response.json();
+            throw new FetchError(errorResponse.statusCode, errorResponse.message);
         }
     });
 }
@@ -35,7 +36,7 @@ async function httpPostProtected(url: string, data: object, init?: ResponseInit)
         body: JSON.stringify(data),
         ...init
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             if (parseInt(response.headers.get("Content-Length") || "0") !== 0) {
                 return response.json();
@@ -45,7 +46,8 @@ async function httpPostProtected(url: string, data: object, init?: ResponseInit)
             }
         }
         else {
-            throw new FetchError(response.status, response.statusText);
+            const errorResponse = await response.json();
+            throw new FetchError(errorResponse.statusCode, errorResponse.message);
         }
     });
 }
@@ -56,7 +58,7 @@ async function httpGet(url: string, init?: ResponseInit): Promise<any> {
         mode: "cors",
         ...init
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             if (parseInt(response.headers.get("Content-Length") || "0") !== 0) {
                 return response.json();
@@ -66,7 +68,8 @@ async function httpGet(url: string, init?: ResponseInit): Promise<any> {
             }
         }
         else {
-            throw new FetchError(response.status, response.statusText);
+            const errorResponse = await response.json();
+            throw new FetchError(errorResponse.statusCode, errorResponse.message);
         }
     });
 }
@@ -77,7 +80,7 @@ async function httpGetProtected(url: string, init?: ResponseInit): Promise<any> 
         mode: "cors",
         ...init
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             if (parseInt(response.headers.get("Content-Length") || "0") !== 0) {
                 return response.json();
@@ -87,7 +90,8 @@ async function httpGetProtected(url: string, init?: ResponseInit): Promise<any> 
             }
         }
         else {
-            throw new FetchError(response.status, response.statusText);
+            const errorResponse = await response.json();
+            throw new FetchError(errorResponse.statusCode, errorResponse.message);
         }
     });
 }
