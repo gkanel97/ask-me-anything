@@ -29,15 +29,6 @@ class App extends React.Component {
         // this.renderProtected = this.renderProtected.bind(this);
     }
 
-    componentDidMount() {
-        const un = localStorage.getItem("username");
-        const at = localStorage.getItem("access_token");
-
-        if (un && at) {
-            this.authCallback(un, at);
-        }
-    }
-
     isAuthenticated() {
         return Boolean(this.state.username) && isValidToken(this.state.token);
     }
@@ -97,7 +88,9 @@ class App extends React.Component {
                         <Route exact path='/account/contributions' render={this.renderProtected(Contributions)} />
 
                         {/* QUESTIONS ROUTES */}
-                        <Route exact path='/question' component={QuestionHome} />
+                        <Route exact path='/question' render={
+                            (props) => <QuestionHome {...props} hasAuthenticatedUser={this.isAuthenticated()} />
+                        } /> 
                         <Route exact path='/question/ask' render={this.renderProtected(Question)} />
                         <Route exact path='/question/answer/:questionId' render={this.renderProtected(Answer)} />
 

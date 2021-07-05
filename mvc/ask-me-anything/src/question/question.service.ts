@@ -29,7 +29,7 @@ export class QuestionService {
         throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
       }
       if (question.user.id !== uuid) {
-        throw new ForbiddenException("You ain't gonna delete other people's questions, you BIATCH");
+        throw new ForbiddenException("You can't delete another user's question");
       }
       await innerManager.delete(Question, questionId);
     });
@@ -42,7 +42,7 @@ export class QuestionService {
         throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
       }
       if (question.user.id !== uuid) {
-        throw new ForbiddenException("You ain't gonna delete other people's questions, you BIATCH");
+        throw new ForbiddenException("You can't update another user's question");
       }
       innerManager.merge(Question, question, updateQuestionDto);
       return innerManager.save(question);
@@ -81,6 +81,21 @@ export class QuestionService {
         },
         take: n
       });
+    }
+    else {
+      return null;
+    }
+  }
+
+  // searchByDate finds at most n question created on "date".
+  // If no "date" is given, this function returns null
+  async searchByDate(n: number, date: string) {
+    if (date) {
+      return this.manager
+        .createQueryBuilder(Question, "q")
+        .where('"updateDate"::date = :requestedDate', { requestedDate: date })
+		.orderBy('"updateDate"', "DESC")
+        .getMany();
     }
     else {
       return null;

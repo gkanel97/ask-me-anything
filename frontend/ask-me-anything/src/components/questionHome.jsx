@@ -11,22 +11,27 @@ class QuestionHome extends Component {
             questionList: [],
             isQuestionListFiltered: false,
             searchText: "",
-            searchOption: "t"
+            searchByOption: "t"
         };
 
         this.searchByRef = React.createRef();
 
         this.setSearchText = this.setSearchText.bind(this);
+        this.setSearchByOption = this.setSearchByOption.bind(this);
         this.search = this.search.bind(this);
     }
 
     componentDidMount() {
-        httpGet(`${QUESTION_BASE_URL}/getMany/20`)
+        httpGet(`${QUESTION_BASE_URL}/getMany/${this.props.hasAuthenticatedUser ? 30 : 10}`)
         .then(qL => {
             this.setState({
                 questionList: qL
             });
         })
+        .catch(e => {
+            console.log(e);
+            this.props.history.push("/")
+        });
     }
 
     setSearchText(event) {
@@ -35,41 +40,72 @@ class QuestionHome extends Component {
         });
     }
 
+    setSearchByOption(event) {
+        this.setState({
+            searchByOption: event.target.value
+        });
+    }
+
     search(event) {
         event.preventDefault();
 
         if (!this.state.searchText) {
             if(this.state.isQuestionListFiltered) {
-                httpGet(`${QUESTION_BASE_URL}/getMany/20`)
+                httpGet(`${QUESTION_BASE_URL}/getMany/30`)
                 .then(qL => {
                     this.setState({
                         questionList: qL,
                         isQuestionListFiltered: false
                     });
                 })
+                .catch(e => {
+                    console.log(e);
+                    this.props.history.push("/")
+                });
             }
             return;
         }
 
         switch (this.searchByRef.current.value) {
             case 't':
-                httpGet(`${QUESTION_BASE_URL}/searchByTitle/20?title=${this.state.searchText}`)
+                httpGet(`${QUESTION_BASE_URL}/searchByTitle/30?title=${this.state.searchText}`)
                 .then(payload => {
                     this.setState({
                         questionList: payload,
                         isQuestionListFiltered: true
                     })
                 })
+                .catch(e => {
+                    console.log(e);
+                    this.props.history.push("/")
+                });
                 break;
             case 'k':
-                httpGet(`${KEYWORD_BASE_URL}/filterQuestionsByKeyword/20?text=${this.state.searchText}`)
+                httpGet(`${KEYWORD_BASE_URL}/filterQuestionsByKeyword/30?text=${this.state.searchText}`)
                 .then(payload => {
                     this.setState({
                         questionList: payload,
                         isQuestionListFiltered: true
                     })
                 })
+                .catch(e => {
+                    console.log(e);
+                    this.props.history.push("/")
+                });
                 break;
+            case 'd':
+                    httpGet(`${QUESTION_BASE_URL}/searchByDate/30?date=${this.state.searchText}`)
+                    .then(payload => {
+                        this.setState({
+                            questionList: payload,
+                            isQuestionListFiltered: true
+                        })
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        this.props.history.push("/")
+                    });
+                    break;
             default:
                 break;
         }
@@ -83,14 +119,21 @@ class QuestionHome extends Component {
                         <h2>Browse Questions</h2>
                     </div>
                     <div className="col-lg-5">
-                        <div className="input-group mb-3">
-                            <input type="text" className="form-control" value={this.state.searchText} onChange={this.setSearchText} style={{ width: "50%" }} />
-                            <select ref={this.searchByRef} className="form-select" style={{ width: "30%" }}>
-                                <option value="t" selected>By Title</option>
-                                <option value="k">By Keyword</option>
-                            </select>
-                            <button class="btn btn-info" type="button" onClick={this.search} style={{ width: "20%" }}>Search</button>
-                        </div>
+                        {
+                            this.props.hasAuthenticatedUser
+                            ?
+                                <div className="input-group mb-3">
+                                    <input type={this.state.searchByOption === "d" ? "date" : "search"} className="form-control" value={this.state.searchText} onChange={this.setSearchText} style={{ width: "50%" }} />
+                                    <select ref={this.searchByRef} className="form-select" style={{ width: "30%" }} onChange={this.setSearchByOption}>
+                                        <option value="t" selected>By Title</option>
+                                        <option value="k">By Keyword</option>
+                                        <option value="d">By Date</option>
+                                    </select>
+                                    <button class="btn btn-info" type="button" onClick={this.search} style={{ width: "20%" }}>Search</button>
+                                </div>
+                            :
+                                null
+                        }
                     </div>
                 </div>
                 <div className="container-lg px-0">
