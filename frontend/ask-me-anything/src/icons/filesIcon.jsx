@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
-const AlignBottom = forwardRef(({ color, size, ...rest }, ref) => {
+const FilesIcon = forwardRef(({ color, size, ...rest }, ref) => {
   return (
     <svg
       ref={ref}
@@ -12,20 +12,19 @@ const AlignBottom = forwardRef(({ color, size, ...rest }, ref) => {
       fill={color}
       {...rest}
     >
-      <rect width="4" height="12" x="6" y="1" rx="1" />
-      <path d="M1.5 14a.5.5 0 0 0 0 1v-1zm13 1a.5.5 0 0 0 0-1v1zm-13 0h13v-1h-13v1z" />
+      <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>
     </svg>
   );
 });
 
-AlignBottom.propTypes = {
+FilesIcon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
-AlignBottom.defaultProps = {
+FilesIcon.defaultProps = {
   color: 'currentColor',
   size: '1em',
 };
 
-export default AlignBottom;
+export default FilesIcon;
