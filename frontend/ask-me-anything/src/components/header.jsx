@@ -1,7 +1,5 @@
 import React from 'react';
-import Logo from "../logo.svg";
 import { NavLink } from 'react-router-dom';
-import QuestionLg from '../icons/questionLg';
 import QuestionSquare from '../icons/questionSquare';
 
 function UserAuthLink(props) {

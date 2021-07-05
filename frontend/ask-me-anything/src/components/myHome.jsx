@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { NavLink } from 'react-router-dom';
 import { Chart, registerables } from 'chart.js';
-import { httpGet, httpGetProtected } from '../scripts/requests';
+import { httpGetProtected } from '../scripts/requests';
 import { ANSWER_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
 
 class MyHome extends Component {
@@ -12,27 +12,41 @@ class MyHome extends Component {
             let formattedData = await httpGetProtected(url)
             .then(payload => {
                 return  payload.reduce( (acc, v) => { return {...acc, [v.date]: v.count} }, {});
+            })
+            .catch( () => {
+                return null;
             });
-            let currentDay = new Date();
-            let today = new Date();
-            let data = new Array();
-            currentDay.setDate(currentDay.getDate() - 7);
-            while (currentDay <= today) {
-                let dateString = currentDay.toISOString().split('T')[0];
-                let dateCount = formattedData[dateString] ?? 0;
-                data.push({date: dateString, count: dateCount});
-                currentDay.setDate(currentDay.getDate() + 1);
+            if (formattedData) {
+                let currentDay = new Date();
+                let today = new Date();
+                let data = new Array();
+                currentDay.setDate(currentDay.getDate() - 7);
+                while (currentDay <= today) {
+                    let dateString = currentDay.toISOString().split('T')[0];
+                    let dateCount = formattedData[dateString] ?? 0;
+                    data.push({date: dateString, count: dateCount});
+                    currentDay.setDate(currentDay.getDate() + 1);
+                }
+                return data;
             }
-            return data;
+            else {
+                return null;
+            }
         }
 
         const ctx = document.getElementById('contributionsChart').getContext('2d');
+        const graphData = await formatData(`${QUESTION_BASE_URL}/getMyQuestionsPerDay/7`);
+        if (!graphData) {
+            const graphContainer = document.getElementById('contributionsChart').parentElement;
+            graphContainer.innerText = "Sorry! An error occured while rendering this graph.";
+            return;
+        }
         const cfg = {
             type: 'bar',
             data: {
                 datasets: [{
                     label: 'Questions',
-                    data: await formatData(`${QUESTION_BASE_URL}/getMyQuestionsPerDay/7`),
+                    data: graphData,
                     backgroundColor: 'rgba(54, 162, 235, 0.9)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     parsing: {

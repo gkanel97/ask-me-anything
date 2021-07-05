@@ -18,6 +18,9 @@ class Signout extends Component {
                 "Content-Type": "application/json"
             }
         })
+        .catch(e => {
+            console.log(e);
+        })
     }
 
     render() { 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import KeywordBadgeList from './keywordBadgeList';
 import { KEYWORD_BASE_URL, QUESTION_BASE_URL } from '../configuration/URLS';
-import { httpGet, httpGetProtected, httpPostProtected } from '../scripts/requests';
+import { httpGet, httpPostProtected } from '../scripts/requests';
 
 function KeywordDropdown(props) {
     const keywords = props.keywords;
@@ -61,7 +61,8 @@ class Question extends Component {
                 this.setState({
                     keywordsDropdownList: payload.map(keyword_obj => keyword_obj.keywordText)
                 });
-            });
+            })
+            .catch(e => console.log(e));
         }
         else {
             this.setState({
@@ -99,6 +100,7 @@ class Question extends Component {
                 keywordText: ""
             })
         })
+        .catch(e => console.log(e));
     }
 
     clearkeywordText(event) {
@@ -162,6 +164,8 @@ class Question extends Component {
         }
         catch (e) {
             console.log(e);
+            alert("Sorry! An error occured while creating your question. You'll be redirected to your account page.");
+            this.props.history.push("/account");
         }
     }
 

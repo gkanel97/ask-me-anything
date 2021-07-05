@@ -58,7 +58,10 @@ class Signup extends Component {
         .then(() => {
             this.props.history.push('/auth/signin');
         })
-        .catch(() => {
+        .catch((e) => {
+            if (e?.status === 406) {
+                alert(e.message);
+            }
             this.setState({
                 password: '',
                 passwordConfirm: '',
@@ -113,7 +116,7 @@ class Signup extends Component {
                             <label htmlFor="txtLastName" className="form-label">Last Name</label>
                         </div>
                         <div className="form-floating mb-3">
-                            <div class="form-check">
+                            <div className="form-check">
                                 <input className="form-check-input" type="checkbox" name="terms" checked={this.state.terms} id="chkTerms" onChange={this.setInputValue} required />
                                 <label className="form-check-label" htmlFor="chkTerms">
                                     I have read and accept the <Link to="/terms">terms &amp; conditions</Link>
