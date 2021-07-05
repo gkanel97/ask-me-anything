@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import FilesIcon from '../icons/filesIcon';
 import FileText from '../icons/fileText';
 import Github from '../icons/github';
 
@@ -30,23 +31,26 @@ class Footer extends Component {
                             <li className="nav-item">
                                 <Link className="nav-link" to='/about'>About</Link>
                             </li>
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                                 <Link className="nav-link" to='/contact'>Contact Us</Link>
-                            </li>
+                            </li> */}
                             <li className="nav-item">
-                                <a className="nav-link">
+                                <a className="nav-link" href="https://github.com/absolutEngineer/ask-me-anything/" target="_blank">
                                     <FileText />
                                     <span className="ms-1">Project Documentation</span>
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link">
+                                <a className="nav-link" href="https://github.com/absolutEngineer/ask-me-anything/" target="_blank">
                                     <Github />
                                     <span className="ms-1">Github</span>
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="https://courses.pclab.ece.ntua.gr/course/view.php?id=34" target="_blank">Course Materials</a>
+                                <a className="nav-link" href="https://courses.pclab.ece.ntua.gr/course/view.php?id=34" target="_blank">
+                                    <FilesIcon />
+                                    <span className="ms-1">Course Materials</span>
+                                </a>
                             </li>
                         </ul>
                     </div>
