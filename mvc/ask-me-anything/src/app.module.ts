@@ -6,27 +6,19 @@ import { AnswerModule } from './answer/answer.module';
 import { KeywordModule } from './keyword/keyword.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
-    UserModule, 
-    RefreshTokenModule, 
-    QuestionModule, 
-    AnswerModule, 
-    KeywordModule, 
-    AuthModule, 
-    TypeOrmModule.forRoot({
-      "type": "postgres",
-      "url": process.env.DATABASE_URL,
-      "entities": ["dist/**/*.entity{.ts,.js}"],
-      "migrationsTableName": "migrations",
-      "migrations": ["dist/migration/*{.ts,.js}"],
-      "cli": {
-        "migrationsDir": "migration"
-      }
-    })
+    UserModule,
+    RefreshTokenModule,
+    QuestionModule,
+    AnswerModule,
+    KeywordModule,
+    AuthModule,
+    TypeOrmModule.forRoot()
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
