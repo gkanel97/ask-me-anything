@@ -10,6 +10,7 @@ import { EntityManager } from "typeorm";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
 import { AppService } from "./app.service";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
       private choreographerService: AppService
   ) {}
 
+  // create generates a new user with a unique username and e-mail address.
   async create(createUserDto: CreateUserDto): Promise<User> {
     return this.manager.transaction(async manager => {
       const user = await manager.findOne(User, {
@@ -30,6 +32,7 @@ export class UserService {
         throw new NotAcceptableException("A user with the same username and/or email already exists!");
       }
       let newUserEntity = await this.manager.create(User, createUserDto);
+
       // Hashing is performed in the entity by a BeforeInsert trigger
       // newUserEntity.password = await bcrypt.hash(createUserDto.password, 10);
       let newUser = await manager.save(newUserEntity);
@@ -43,6 +46,7 @@ export class UserService {
     });
   }
 
+  // findByUsername function searches for a user entity with a specific username.
   async findByUsername(username: string): Promise<User> {
     const user = await this.manager.findOne(User, {username: username});
     if (!user) {
@@ -51,33 +55,37 @@ export class UserService {
     return user;
   }
 
-  // async findByUUID(uuid: string): Promise<User> {
-  //   const user = await this.manager.findOne(User, { id: uuid });
-  //   if (!user) {
-  //     throw new NotFoundException();
-  //   }
-  //   return user;
-  // }
-  //
-  // async updateName(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
-  //   return this.manager.transaction(async manager => {
-  //     const user = await manager.findOne(User, uuid);
-  //     if (!user) {
-  //       throw new NotFoundException();
-  //     }
-  //     // user.firstName = updateUserDto.firstName;
-  //     // user.lastName = updateUserDto.lastName;
-  //     manager.merge(User, user, updateUserDto);
-  //     return manager.save(user);
-  //   });
-  // }
+  // findByUUID function searches for a user entity with a specific uuid.
+  async findByUUID(uuid: string): Promise<User> {
+    const user = await this.manager.findOne(User, { id: uuid });
+    if (!user) {
+      throw new NotFoundException();
+    }
+    return user;
+  }
 
+  // updateName function updates the properties of a user entity and saves the changes to the database.
+  async updateName(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
+    return this.manager.transaction(async manager => {
+      const user = await manager.findOne(User, uuid);
+      if (!user) {
+        throw new NotFoundException();
+      }
+
+      manager.merge(User, user, updateUserDto);
+      return manager.save(user);
+    });
+  }
+
+  // updatePassword changes the password of a specific user. It may be useful when a user has
+  // forgotten their password and wants to reset it.
   async updatePassword(uuid: string, password: string): Promise<User> {
     return this.manager.transaction(async manager => {
       const user = await manager.findOne(User, { id: uuid });
       if (!user) {
         throw new NotFoundException();
       }
+
       // Hashing is performed in the entity by a BeforeUpdate trigger
       // BeforeUpdate trigger was removed because we have two separate updating functionalities
       // One updates just the password and the other updates just the names
