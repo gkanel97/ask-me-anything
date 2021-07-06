@@ -1,9 +1,0 @@
-{
-  "type": "postgres",
-  "host": "localhost",
-  "port": 5432,
-  "username": "q2d",
-  "password": "alskdjfhg",
-  "database": "mvc",
-  "entities": ["dist/**/*.entity{.ts,.js}"]
-}

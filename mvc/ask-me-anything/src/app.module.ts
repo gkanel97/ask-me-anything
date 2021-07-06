@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { QuestionModule } from './question/question.module';
@@ -10,8 +8,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule, RefreshTokenModule, QuestionModule, AnswerModule, KeywordModule, TypeOrmModule.forRoot(), AuthModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    UserModule, 
+    RefreshTokenModule, 
+    QuestionModule, 
+    AnswerModule, 
+    KeywordModule, 
+    AuthModule, 
+    TypeOrmModule.forRoot({
+      "type": "postgres",
+      "url": process.env.DATABASE_URL,
+      "entities": ["dist/**/*.entity{.ts,.js}"],
+      "migrationsTableName": "migrations",
+      "migrations": ["dist/migration/*{.ts,.js}"],
+      "cli": {
+        "migrationsDir": "migration"
+      }
+    })
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
