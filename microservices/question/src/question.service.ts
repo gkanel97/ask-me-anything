@@ -3,7 +3,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { User } from "./entities/user.entity";
 import { InjectEntityManager } from "@nestjs/typeorm";
-import { EntityManager, getManager } from "typeorm";
+import { EntityManager, ILike } from "typeorm";
 import { Question } from "./entities/question.entity";
 
 const axios = require('axios').default;
@@ -12,6 +12,8 @@ const axios = require('axios').default;
 export class QuestionService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // publishNewQuestion function publishes new question entities on the equivalent channel,
+  // so that other microservices can update their databases
   async publishNewQuestion(newQuestion: Question): Promise<boolean> {
     const resp = await axios.post("http://localhost:4000/publishAsync", {
       channel: "questions",
@@ -20,6 +22,8 @@ export class QuestionService {
     return resp.status === 204;
   }
 
+  // create function generates new Questions based on the data provided with the POST query.
+  // It then saves the entity on the local database and publishes the new question on the equivalent channel
   async create(createQuestionDto: CreateQuestionDto, uuid) {
     return this.manager.transaction(async innerManager => {
       const user = await innerManager.findOne(User, uuid);
@@ -39,41 +43,18 @@ export class QuestionService {
     });
   }
 
-  async delete(questionId: number, uuid: string) {
-    return this.manager.transaction(async innerManager => {
-      const question = await innerManager.findOne(Question, questionId, { relations: ["user"] });
-      if (!question) {
-        throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
-      }
-      if (question.user.id !== uuid) {
-        throw new ForbiddenException("You have no permission to delete this question");
-      }
-      await innerManager.delete(Question, questionId);
-    });
-  }
-
-  async update(questionId: number, updateQuestionDto: UpdateQuestionDto, uuid: string) {
-    return this.manager.transaction(async innerManager => {
-      const question = await innerManager.findOne(Question, questionId, {relations: ["user"]});
-      if (!question) {
-        throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
-      }
-      if (question.user.id !== uuid) {
-        throw new ForbiddenException("You have no permission to update this question");
-      }
-      innerManager.merge(Question, question, updateQuestionDto);
-      return innerManager.save(question);
-    });
-  }
-
+  // getOne function fetches one question entity with a specific ID, along with its answers and keywords
   async getOne(questionId: number) {
     return this.manager.findOne(Question, questionId, { relations: ["answers", "keywords"] });
   }
 
+  // getMany function returns the n most recent questions
   async getMany(n: number) {
     return this.manager.find(Question, { take: n, order: { updateDate: "DESC" } });
   }
 
+  // getMy function returns at most n questions created by a user with a specific uuid.
+  // The questions are sorted in chronologically descending order
   async getMy(n: number, uuid: string) {
     return this.manager.find(Question, {
       where: {
@@ -88,27 +69,65 @@ export class QuestionService {
     });
   }
 
+  // searchByTitle finds at most n question whose title contain "text" at any position.
+  // If no "text" is given, this function returns null
+  async searchByTitle(n: number, text: string) {
+    if (text) {
+      return this.manager.find(Question, {
+        where: {
+          questionTitle: ILike(`%${text}%`)
+        },
+        take: n
+      });
+    }
+    else {
+      return null;
+    }
+  }
+
+  // searchByDate finds at most n question created on "date".
+  // If no "date" is given, this function returns null
+  async searchByDate(n: number, date: string) {
+    if (date) {
+      return this.manager
+          .createQueryBuilder(Question, "q")
+          .where('"updateDate"::date = :requestedDate', { requestedDate: date })
+          .orderBy('"updateDate"', "DESC")
+          .getMany();
+    }
+    else {
+      return null;
+    }
+  }
+
+  // getQuestionsPerDay counts the number of questions created in the last n days by all users
+  // It returns an object with the days as keys and the counts as values.
   async getQuestionsPerDay(n: number) {
-    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
     const firstDay = new Date();
     firstDay.setDate(firstDay.getDate() - n);
 
+    // The generated SQL query is equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE updateDate > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     return this.manager
         .createQueryBuilder(Question, "q")
-        .select("DATE(updateDate)", "date")
+        .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
         .addSelect("COUNT(id)", "count")
-        .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+        .where('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
         .groupBy("date")
         .orderBy("date", "DESC")
         .getRawMany();
   }
 
+  // getQuestionsPerDay counts the number of questions created in the last n days by one user with a specific uuid.
+  // It returns an object with the days as keys and the counts as values.
   async getMyQuestionsPerDay(n: number, uuid: string) {
     // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
 
     const firstDay = new Date();
     firstDay.setDate(firstDay.getDate() - n);
 
+    // The generated SQL query is equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = uuid AND date > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     return this.manager
         .createQueryBuilder(Question, "q")
         .select("DATE(updateDate)", "date")
@@ -119,5 +138,4 @@ export class QuestionService {
         .orderBy("date", "ASC")
         .getRawMany();
   }
-
 }

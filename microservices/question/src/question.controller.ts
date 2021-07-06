@@ -7,7 +7,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor
+  ParseIntPipe, UseInterceptors, ClassSerializerInterceptor, ForbiddenException, Query
 } from "@nestjs/common";
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -30,14 +30,14 @@ export class QuestionController {
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   deleteMyQuestion(@Param('questionId', ParseIntPipe) questionId: number, @Request() req) {
-    return this.questionService.delete(questionId, req.user);
+    throw new ForbiddenException();
   }
 
   @Post('update/:questionId')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   updateMyQuestion(@Param('questionId', ParseIntPipe) questionId: number, @Body() updateQuestionDto: UpdateQuestionDto, @Request() req) {
-    return this.questionService.update(questionId, updateQuestionDto, req.user);
+    throw new ForbiddenException();
   }
 
   @Get('getOne/:id')
@@ -57,6 +57,18 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   getMy(@Param('n', ParseIntPipe) n: number, @Request() req) {
     return this.questionService.getMy(n, req.user);
+  }
+
+  @Get('searchByTitle/:n')
+  @HttpCode(200)
+  searchByTitle(@Param('n', ParseIntPipe) n:number, @Query('title') title: string) {
+    return this.questionService.searchByTitle(n, title);
+  }
+
+  @Get('searchByDate/:n')
+  @HttpCode(200)
+  searchByDate(@Param('n', ParseIntPipe) n:number, @Query('date') date: string) {
+    return this.questionService.searchByDate(n, date);
   }
 
   @Get('getQuestionsPerDay/:n')
