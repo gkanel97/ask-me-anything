@@ -11,25 +11,29 @@ import { EntityManager } from 'typeorm';
 export class AnswerService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
-  async create(createAnswerDto: CreateAnswerDto, uuid: number): Promise<Answer> {
-    return this.manager.transaction(async innerManager => {
-      const question = await innerManager.findOne(Question, createAnswerDto.questionId);
-      if (!question) {
-        throw new NotFoundException(`Question ${createAnswerDto.questionId} not found`);
-      }
-      const user = await innerManager.findOne(User, uuid);
-      if (!user) {
-        throw new NotFoundException(`User ${uuid} not found`);
-      }
+    // Create function generates a new answer by a specific user for a given question.
+    // First it checks if the answer and the user provided actually exist and then
+    // creates the new answer.
+    async create(createAnswerDto: CreateAnswerDto, uuid: number): Promise<Answer> {
+        return this.manager.transaction(async innerManager => {
+          const question = await innerManager.findOne(Question, createAnswerDto.questionId);
+          if (!question) {
+            throw new NotFoundException(`Question ${createAnswerDto.questionId} not found`);
+          }
+          const user = await innerManager.findOne(User, uuid);
+          if (!user) {
+            throw new NotFoundException(`User ${uuid} not found`);
+          }
 
-      const newAnswerObject = {user: user, question: question, answerText: createAnswerDto.answerText};
-      const newAnswerEntity = await innerManager.create(Answer, newAnswerObject);
-      return innerManager.save(newAnswerEntity);
-    });
-    
-  }
+          const newAnswerObject = {user: user, question: question, answerText: createAnswerDto.answerText};
+          const newAnswerEntity = await innerManager.create(Answer, newAnswerObject);
+          return innerManager.save(newAnswerEntity);
+        });
+    }
 
-     async update(answerId: number, updateAnswerDto: UpdateAnswerDto, uuid: string) {
+    // This function modifies an answer Entity, using the new data passed by the updateAnswerDto.
+    // First it checks if the user owns the answer and is thus authorized to change it.
+    async update(answerId: number, updateAnswerDto: UpdateAnswerDto, uuid: string) {
         return this.manager.transaction(async innerManager => {
           const answer = await innerManager.findOne(Answer, answerId, { relations: ["user"] });
           if (!answer) {
@@ -43,6 +47,8 @@ export class AnswerService {
         });
      }
 
+    // This function deletes an answer entity, after checking that the user owns it and has the
+    // permission to delete it.
      async delete(answerId: number, uuid: string) {
         return this.manager.transaction(async innerManager => {
           const answer = await innerManager.findOne(Answer, answerId, { relations: ["user"] });
@@ -56,6 +62,8 @@ export class AnswerService {
         });
      }
 
+    // getMy function returns the last n answers that a specific user processed, along
+    // with the question each of them answers.
      async getMy(n: number, uuid: string) {
         return this.manager.find(Answer, {
           where: {
@@ -69,23 +77,26 @@ export class AnswerService {
         });
      }
 
+    // getAnswersPerDay aggregates the answers that have been processed by all users during the last n days
+    // It creates a SQL query equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE date > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     async getAnswersPerDay(n: number) {
-        // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
         const firstDay = new Date();
         firstDay.setDate(firstDay.getDate() - n);
-
         return this.manager
             .createQueryBuilder(Answer, "ans")
-            .select("DATE(updateDate)", "date")
+            .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
             .addSelect("COUNT(id)", "count")
-            .where("date > DATE(:dayInterval)", {dayInterval: firstDay.toISOString()})
+            .where('"updateDate" > DATE(:dayInterval)', {dayInterval: firstDay.toISOString()})
             .groupBy("date")
             .orderBy("date", "DESC")
             .getRawMany();
     }
 
+    // getMyAnswersPerDay aggregates the answers that have been processed by a specific user during the last n days
+    // It creates a SQL query equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE userID = uuid AND date > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     async getMyAnswersPerDay(n: number, uuid: string) {
-        // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM answers WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
         const firstDay = new Date();
         firstDay.setDate(firstDay.getDate() - n);
 
