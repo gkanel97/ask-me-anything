@@ -7,6 +7,8 @@ import {Keyword} from "./entities/keyword.entity";
 export class AppService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // search function returns at most n keywords starting with "text"
+  // If no text is given, this function returns at most n keywords
   async search(n: number, text: string) {
     if (text) {
       return this.manager.find(Keyword, {
