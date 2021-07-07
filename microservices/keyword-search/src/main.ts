@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 
 const axios = require('axios').default;
 
+// The keyword-search microservice subscribes to keywords channel, because it must get informed
+// for changes in Keyword entities.
 async function subscribeToChannels(): Promise<boolean> {
   const respKeyword = await axios.post("http://localhost:4000/subscribeAsync", {
     address: "http://localhost:3006/sync/getKeywordEvent",

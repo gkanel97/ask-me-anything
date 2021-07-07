@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+// The question microservice subscribes to users channel, because it must get informed
+// for changes in User entities.
 const axios = require('axios');
 async function subscribeToChannels(): Promise<boolean> {
   const resp = await axios.post("http://localhost:4000/subscribeAsync", {

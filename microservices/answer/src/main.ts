@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 
 const axios = require('axios').default;
 
+// The answer microservice subscribes to users and questions channels, because it must get informed
+// for changes in User and Question entities.
 async function subscribeToChannels(): Promise<boolean> {
   const respUser = await axios.post("http://localhost:4000/subscribeAsync", {
     address: "http://localhost:3004/sync/getUserEvent",
