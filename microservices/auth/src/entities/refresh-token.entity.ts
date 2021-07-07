@@ -1,0 +1,13 @@
+import { Entity, PrimaryColumn, ManyToOne, JoinColumn, Index } from "typeorm";
+import { User } from './user.entity';
+
+@Entity("refresh_tokens")
+export class RefreshToken {
+  @PrimaryColumn()
+  token: string;
+
+  @ManyToOne(() => User, user => user.tokens, { onDelete: "CASCADE" })
+  @JoinColumn({ name: 'userUUID' })
+  @Index()
+  user: User;
+}
