@@ -25,6 +25,7 @@ export class AppService {
     }
   }
 
+  // getKeywordEvent runs when a new keyword is created and inserts it to the local database.
   async getKeywordEvent(keyword: Keyword) {
     const newKeyword = await this.manager.save(Keyword, keyword);
 

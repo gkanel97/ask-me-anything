@@ -9,6 +9,7 @@ export class AppService {
 
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // getUserEvent handles a message indicating that a new user has been created.
   async getUserEvent(user: User) {
     const newUser = await this.manager.save(User, user);
 
@@ -20,6 +21,7 @@ export class AppService {
     }
   }
 
+  // getQuestionEvent adds new question entities to the local database. It gets invoked by messages from the subscription channel.
   async getQuestionEvent(question: Question) {
     const newQuestion = await this.manager.save(Question, question);
 

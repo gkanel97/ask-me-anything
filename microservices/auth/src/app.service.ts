@@ -7,6 +7,7 @@ export class AppService {
 
   constructor(private readonly userService: UserService) {}
 
+  // getUserEvent handles a message indicating that a new user has been created.
   async getUserEvent(user: User) {
     const newUser = await this.userService.addUser(user);
 

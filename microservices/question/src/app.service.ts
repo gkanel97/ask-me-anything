@@ -8,6 +8,7 @@ export class AppService {
 
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // getUserEvent handles a message indicating that a new user has been created.
   async getUserEvent(user: User) {
     const newUser = await this.manager.save(User, user);
 

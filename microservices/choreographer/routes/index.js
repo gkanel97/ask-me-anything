@@ -6,22 +6,6 @@ const { promisify } = require('util');
 
 const axios = require('axios');
 
-// router.post('/subscribe', function(req, res, next) {
-//   const { address, channels } = req.body;
-//   const client = redis.createClient();
-//   client.hgetall("subscribers", (error, result) => {
-//     channels.forEach(channel => {
-//       const channelSubs = new Set(JSON.parse(result[channel]));
-//       channelSubs.add(address);
-//       client.hmset("subscribers", channel, JSON.stringify(Array.from(channelSubs)), () => {});
-//     });
-//     client.hgetall("subscribers", (e, r) => {
-//       res.send(JSON.stringify(r));
-//     });
-//   });
-//   //client.quit();
-// });
-
 // subscribeAsync saves a subscriber's (i.e. microservice's) listening endpoint to the desired channels
 // It receives an object with the subscriber's full endpoint URL and a list of channels.
 router.post('/subscribeAsync', async function(req, res, next) {
