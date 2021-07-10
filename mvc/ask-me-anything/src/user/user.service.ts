@@ -35,6 +35,7 @@ export class UserService {
     });
   }
 
+  // findByUsername function searches for a user entity with a specific username.
   async findByUsername(username: string): Promise<User> {
     const user = await this.manager.findOne(User, {username: username});
     if (!user) {
@@ -43,7 +44,7 @@ export class UserService {
     return user;
   }
 
-
+  // findByUUID function searches for a user entity with a specific uuid.
   async findByUUID(uuid: string): Promise<User> {
     const user = await this.manager.findOne(User, { id: uuid });
     if (!user) {
@@ -59,10 +60,6 @@ export class UserService {
       if (!user) {
         throw new NotFoundException();
       }
-
-      // manager.merge is equivalent to:
-      // user.firstName = updateUserDto.firstName;
-      // user.lastName = updateUserDto.lastName;
       manager.merge(User, user, updateUserDto);
       return manager.save(user);
     });

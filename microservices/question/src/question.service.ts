@@ -121,7 +121,6 @@ export class QuestionService {
   // getQuestionsPerDay counts the number of questions created in the last n days by one user with a specific uuid.
   // It returns an object with the days as keys and the counts as values.
   async getMyQuestionsPerDay(n: number, uuid: string) {
-    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
 
     const firstDay = new Date();
     firstDay.setDate(firstDay.getDate() - n);

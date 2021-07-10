@@ -10,6 +10,7 @@ import { Question } from "./entities/question.entity";
 export class QuestionService {
   constructor(@InjectEntityManager() private manager: EntityManager) {}
 
+  // create function generates new Questions based on the data provided with the POST query.
   async create(createQuestionDto: CreateQuestionDto, uuid) {
     return this.manager.transaction(async innerManager => {
       const user = await innerManager.findOne(User, uuid);
@@ -22,41 +23,18 @@ export class QuestionService {
     });
   }
 
-  async delete(questionId: number, uuid: string) {
-    return this.manager.transaction(async innerManager => {
-      const question = await innerManager.findOne(Question, questionId, { relations: ["user"] });
-      if (!question) {
-        throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
-      }
-      if (question.user.id !== uuid) {
-        throw new ForbiddenException("You can't delete another user's question");
-      }
-      await innerManager.delete(Question, questionId);
-    });
-  }
-
-  async update(questionId: number, updateQuestionDto: UpdateQuestionDto, uuid: string) {
-    return this.manager.transaction(async innerManager => {
-      const question = await innerManager.findOne(Question, questionId, {relations: ["user"]});
-      if (!question) {
-        throw new NotFoundException(`Question ${questionId} has never existed or was deleted`);
-      }
-      if (question.user.id !== uuid) {
-        throw new ForbiddenException("You can't update another user's question");
-      }
-      innerManager.merge(Question, question, updateQuestionDto);
-      return innerManager.save(question);
-    });
-  }
-
+  // getOne function fetches one question entity with a specific ID, along with its answers and keywords
   async getOne(questionId: number) {
     return this.manager.findOne(Question, questionId, { relations: ["answers", "keywords"] });
   }
 
+  // getMany function returns the n most recent questions
   async getMany(n: number) {
     return this.manager.find(Question, { take: n, order: { updateDate: "DESC" }, relations: ["keywords"] });
   }
 
+  // getMy function returns at most n questions created by a user with a specific uuid.
+  // The questions are sorted in chronologically descending order
   async getMy(n: number, uuid: string) {
     return this.manager.find(Question, {
       where: {
@@ -102,11 +80,15 @@ export class QuestionService {
     }
   }
 
+  // getQuestionsPerDay counts the number of questions created in the last n days by all users
+  // It returns an object with the days as keys and the counts as values.
   async getQuestionsPerDay(n: number) {
-    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions GROUP BY date ORDER BY date DESC LIMIT ($1);", [n]);
+
     const firstDay = new Date();
     firstDay.setDate(firstDay.getDate() - n);
 
+    // The generated SQL query is equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE updateDate > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     return this.manager
       .createQueryBuilder(Question, "q")
       .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")
@@ -117,12 +99,15 @@ export class QuestionService {
       .getRawMany();
   }
 
+  // getQuestionsPerDay counts the number of questions created in the last n days by one user with a specific uuid.
+  // It returns an object with the days as keys and the counts as values.
   async getMyQuestionsPerDay(n: number, uuid: string) {
-    // return this.manager.query("SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = $1 GROUP BY date ORDER BY date DESC LIMIT $2;", [uuid ,n]);
 
     const firstDay = new Date();
     firstDay.setDate(firstDay.getDate() - n);
 
+    // The generated SQL query is equivalent to:
+    // SELECT DATE(updateDate) AS date, COUNT(id) AS count FROM questions WHERE userID = uuid AND date > firstDay GROUP BY date ORDER BY date DESC LIMIT n;
     return this.manager
       .createQueryBuilder(Question, "q")
       .select('TO_CHAR("updateDate", \'YYYY-MM-DD\')', "date")

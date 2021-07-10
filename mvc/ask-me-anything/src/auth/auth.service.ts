@@ -16,6 +16,7 @@ export class AuthService {
     private refTokenService: RefreshTokenService
   ) {}
 
+  // validateUser checks the credentials given by a user
   async validateUser (username: string, password: string): Promise<any> {
     const user = await this.userService.findByUsername(username);
 
@@ -42,6 +43,7 @@ export class AuthService {
     };
   }
 
+  // refreshAccessToken refreshes an access token before it expires, so that the user does not log out
   async refreshAccessToken({ uuid, identifier }) {
     const check = await this.refTokenService.verifyUserToken(uuid, identifier);
 
